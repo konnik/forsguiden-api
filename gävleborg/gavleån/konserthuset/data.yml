@@ -1,0 +1,11 @@
+---
+id: 4
+namn: Konserthuset
+klass: 2
+langd: 1000 m
+fallhojd: 5 m
+smhi: 11802
+flode:
+  min: 30
+  opt: 60
+  max: 100

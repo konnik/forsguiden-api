@@ -1,0 +1,11 @@
+---
+id: 1
+namn: Brännsågen-Åbyggeby
+klass: 2
+langd: 6 km
+fallhojd: 28 m
+smhi: 12020
+flode:
+  min: 20
+  opt: 30
+  max: 100
