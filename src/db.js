@@ -1,22 +1,30 @@
 const initDb = function() {
     const db = {
-        lan : {}
+        lanIds: {},
+        lan : [],
+        vattendragIds: {},
+        vattendrag: []
     }
 
     return {
         getData: () => db,
         sparaLan: (obj) => {
-            if (db[obj.id]) {
-                throw "Ett län med id " + obj.id + " finns redan."
+            if (db.lanIds[obj.id]) {
+                console.error("Ett län med id " + obj.id + " finns redan.")
+                process.exit(1)
             }
-            db.lan[obj.id] = obj
+            db.lanIds[obj.id] = obj
+            db.lan.push(obj)
+
             return obj
         },
         sparaVattendrag: (obj) => {
-            if (db.vattendrag[obj.id]) {
-                throw "Ett vattendrag med id " + obj.id + " finns redan."
+            if (db.vattendragIds[obj.id]) {
+                console.error("Ett vattendrag med id " + obj.id + " finns redan.")
+                process.exit(1)
             }
-            db.vattendrag[obj.id] = obj
+            db.vattendragIds[obj.id] = obj
+            db.vattendrag.push(obj)
             return obj
         }
     }
