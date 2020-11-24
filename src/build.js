@@ -1,13 +1,16 @@
-const fs = require("fs")
-const path = require("path")
 const glob = require("glob");
-const yaml = require("js-yaml");
+const util = require("./util")
+const db = require("./db").initDb()
 
 const allaLan = glob.sync("data/*")
 
 for (const lanFolder of allaLan) {
     console.log("Län: ", lanFolder)
-    const lanData = yaml.load(fs.readFileSync(lanFolder + "/data.yml", { encoding: "utf-8" }))
+
+    const lanData = db.sparaLan(util.laddaObjekt(lanFolder + "/data.yml"))
+
     console.log(JSON.stringify(lanData))
+
+    Object.keys(lanData).forEach( k => console.log(k + "=>" + lanData[k]))
 }
 
