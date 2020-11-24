@@ -1,0 +1,24 @@
+{
+  "name": "forsguiden-api",
+  "version": "1.0.0",
+  "description": "Ett litet experiment med att skapa ett statiskt API med forsinformation.",
+  "main": "index.js",
+  "scripts": {
+    "build": "node src/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/konnik/forsguiden-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/konnik/forsguiden-api/issues"
+  },
+  "homepage": "https://github.com/konnik/forsguiden-api#readme",
+  "dependencies": {
+    "glob": "^7.1.6",
+    "js-yaml": "^3.14.0",
+    "walk": "^2.3.14"
+  }
+}
