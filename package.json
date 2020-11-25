@@ -4,6 +4,7 @@
   "description": "Ett litet experiment med att skapa ett statiskt API med forsinformation.",
   "main": "index.js",
   "scripts": {
+    "korv": "ts-node src/korv.ts",
     "build": "node src/build.js"
   },
   "repository": {
@@ -19,6 +20,8 @@
   "dependencies": {
     "glob": "^7.1.6",
     "js-yaml": "^3.14.0",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.1.2",
     "walk": "^2.3.14"
   }
 }
