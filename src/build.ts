@@ -1,9 +1,10 @@
-
+import { writeFileSync } from "fs"
 import { initDb } from "./db"
 
 
 const db = initDb()
 
+const jamtland = db.laddaLan("./data/jamtland/data.yml");
 const gavleborg = db.laddaLan("./data/gavleborg/data.yml");
 
 const gavlean = db.laddaVattendrag("./data/gavleborg/gavlean/data.yml");
@@ -14,12 +15,13 @@ const brannsagen = db.laddaForsstracka("./data/gavleborg/testeboan/brannsagen-ab
 const vavaren = db.laddaForsstracka("./data/gavleborg/testeboan/vavaren/data.yml");
 const forsby = db.laddaForsstracka("./data/gavleborg/testeboan/forsby/data.yml");
 
-console.log(gavleborg);
-console.log(gavlean);
-console.log(konserthuset)
-console.log(testeboan);
-console.log(brannsagen);
-console.log(vavaren);
-console.log(forsby);
+const allData = {
+    lan: [jamtland, gavleborg],
+    vattendrag: [gavlean, testeboan],
+    forsstrackor: [konserthuset, brannsagen, vavaren, forsby]
+}
+
+console.log(JSON.stringify(allData))
+writeFileSync("./dist/data.json", JSON.stringify(allData), { encoding: "utf-8" })
 
 
