@@ -1,10 +1,26 @@
 = Forsguiden API - ULTRABETA
+:toc: left
+:toc-title: Innehållsförteckning
+
 
 WARNING: Pågående arbete, vad som helst kan ändras när som helst! :-)
 
+== Bakgrund
+
+Målet med Forsguiden API är att samla all information om sveriges forspaddlingsvatten och göra det tillgängligt i ett strukturerat, öppet och väldokumenterat format så att vem som helst ska kunna använda informationen för att bygga egna smarta webapplikationer och mobilappar.
+
 == Informationsmodell
 
+Forsguiden API definierar följande informationsonsobjekt:
+
+* <<lan>> 
+* <<vattendrag>>
+* <<forsstracka>>
+
+[[lan]]
 === Län
+
+Representerar ett av sveriges 21 län.
 
 [source,json]
 {
@@ -14,6 +30,7 @@ WARNING: Pågående arbete, vad som helst kan ändras när som helst! :-)
 
 * id är alltid samma som länets länskod.
 
+[[vattendrag]]
 === Vattendrag
 
 Ett namngivet vattendrag som kan ligga i ett eller flera län.
@@ -31,6 +48,7 @@ Ett namngivet vattendrag som kan ligga i ett eller flera län.
 }
 
 
+[[forsstracka]]
 === Forssträcka
 
 En sträcka man normalt paddlar som en tur från a till b.
@@ -69,3 +87,23 @@ En sträcka man normalt paddlar som en tur från a till b.
 * klass anger anger den huvudsakliga graderingen av sträckan (med eventuella kortare bärbara partier av svårare grad inom parentes) 
 * längd och fallhöjd anges i meter
 * smhi avser id för punkt i smhis vattenwebb
+
+== API
+
+=== Dumpa allt
+
+Hämtar all information om alla forsar och vattendrag i ett enda stort json-objekt.
+
+.Anrop
+[source,json]
+GET /data.json
+
+.Svar
+[source,json]
+{
+    "lan": [ ... ],
+    "vattendrag": [ ... ],
+    "forsstrackor": [ ... ]
+}
+
+link:data.json[Dumpa allt]
