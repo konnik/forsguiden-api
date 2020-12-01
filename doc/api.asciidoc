@@ -1,4 +1,6 @@
-= Forsguiden API
+= Forsguiden API - ULTRABETA
+
+WARNING: Pågående arbete, vad som helst kan ändras när som helst! :-)
 
 == Informationsmodell
 
