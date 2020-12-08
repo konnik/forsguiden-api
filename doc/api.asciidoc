@@ -28,12 +28,16 @@ Representerar ett av sveriges 21 län.
     "namn": "Gävleborg"
 }
 
-* id är alltid samma som länets länskod.
+[horizontal]
+Id:: unik identiferare för länet (är alltid samma som länets länskod)
+Namn:: länets namn
 
 [[vattendrag]]
 === Vattendrag
 
 Ett namngivet vattendrag som kan ligga i ett eller flera län.
+
+==== JSON
 
 [source,json]
 {
@@ -47,46 +51,63 @@ Ett namngivet vattendrag som kan ligga i ett eller flera län.
     ],
 }
 
+[horizontal]
+Id:: unik identifierare för vattendraget
+Namn:: vattendragets namn
+Län:: lista med <<lan>> som vattendraget rinner genom
 
 [[forsstracka]]
 === Forssträcka
 
 En sträcka man normalt paddlar som en tur från a till b.
 
+==== JSON
+
 [source,json]
 {
     "id": 1,
     "namn": "Brännsågen-Åbyggeby",
-    "klass": "2 (3)",
+    "gradering": { 
+        "klass": "3+",
+        "lyft" ["4", "4-","5"]
+    }
+    ,
     "langd": 6000,
     "fallhojd": 28,
     "koordinater": {
         "lat": 60.75627,
         "long": 17.03825
     },
-    "smhi": 12020,
     "flode": {
+        "smhipunkt": 12020,
         "min": 20,
         "opt": 30,
         "max": 100
     },
-    "lan": [
-        {
-            "id": 21,
-            "namn": "Gävleborg"
-        }
-    ],
     "vattendrag": [
         {
             "id": 1,
             "namn": "Testeboån"
         }
+    ],
+    "lan": [
+        {
+            "id": 21,
+            "namn": "Gävleborg"
+        }
     ]
 }
 
-* klass anger anger den huvudsakliga graderingen av sträckan (med eventuella kortare bärbara partier av svårare grad inom parentes) 
-* längd och fallhöjd anges i meter
-* smhi avser id för punkt i smhis vattenwebb
+[horizontal]
+Id:: unikt id för forssträckan
+Namn:: det namn man normalt använder för att referera till forssträckan
+Koordinater:: ungefärliga koordinater (long, lat) för forssträckan
+Gradering:: anger den huvudsakliga graderingen av sträckan (med eventuella kortare lyft av svårare partier) 
+Längd:: sträckans längd (meter)
+Fallhöjd:: total höjdskillnad mellan sträckans start och slut (meter)
+Flöde:: anger vid vilka flöden som turen är mest lämplig att paddla samt den punkt på SMHI's vattenwebb som kan användas för flödesprognos.
+Vattendrag:: det eller de <<vattendrag>> som forssträckan följer (är normalt endast ett vattendrag)
+Län:: det eller de <<lan>> som sträckan passerar (är normalt endast ett län)
 
 == API
 
