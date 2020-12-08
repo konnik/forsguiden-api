@@ -22,6 +22,8 @@ Forsguiden API definierar följande informationsonsobjekt:
 
 Representerar ett av sveriges 21 län.
 
+==== JSON
+
 [source,json]
 {
     "id": 21,
