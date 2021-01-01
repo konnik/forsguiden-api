@@ -1,33 +1,9 @@
 import { readFileSync } from "fs"
 import { load } from "js-yaml"
+import { Forsstracka, Vattendrag, Lan, Grad, Gradering } from "./types"
 
 export function initDb(): Db {
     return new Db()
-}
-
-interface Vattendrag {
-    id: number;
-    namn: string;
-    beskrivning: string;
-}
-
-interface Forsstracka {
-    id: number;
-    namn: string;
-    klass: string;
-    langd: number;
-    fallhojd: number;
-    smhi: number;
-    flode: {
-        min: number;
-        opt: number;
-        max: number;
-    };
-}
-
-interface Lan {
-    id: number;
-    namn: string;
 }
 
 class Db {
