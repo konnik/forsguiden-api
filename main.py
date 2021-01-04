@@ -19,11 +19,11 @@ class LanCollection(BaseModel):
     lan: List[Lan]
 
 @app.get("/lan")
-async def alla_lan() -> LanCollection:
+async def lista_lan() -> LanCollection:
     return LanCollection(lan=db.lanAlla())
 
 @app.get("/lan/{id}")
-async def hamta_lan(id: int) -> Lan:
+async def hamta_lan_med_id(id: int) -> Lan:
     lan = db.lanMedId(id)
     if lan is None:
         raise HTTPException(status_code=404)
@@ -35,11 +35,11 @@ class VattendragCollection(BaseModel):
     vattendrag: List[Vattendrag]
 
 @app.get("/vattendrag")
-async def alla_vattendrag() -> LanCollection:
+async def lista_vattendrag() -> LanCollection:
     return VattendragCollection(vattendrag=db.vattendragAlla())
 
 @app.get("/vattendrag/{id}")
-async def hamta_vattendrag(id: int) -> Vattendrag:
+async def hamta_vattendrag_med_id(id: int) -> Vattendrag:
     vattendrag = db.vattendragMedId(id)
     if vattendrag is None:
         raise HTTPException(status_code=404)
