@@ -45,6 +45,7 @@ Ett namngivet vattendrag som kan ligga i ett eller flera län.
 {
     "id": 1,
     "namn": "Testeboån",
+    "beskrivning": "Ån rinner genom ett flackt skogs- och myrlandskap mellan Ockelbo och Gävle. Testeboån var tidigare flottled och spår efter detta finns kvar på sina håll."
     "lan": [
         {
             "id": 21,
@@ -56,6 +57,7 @@ Ett namngivet vattendrag som kan ligga i ett eller flera län.
 [horizontal]
 Id:: unik identifierare för vattendraget
 Namn:: vattendragets namn
+Beskrivning:: kort beskrivning av vattendraget
 Län:: lista med <<lan>> som vattendraget rinner genom
 
 [[forsstracka]]
@@ -71,7 +73,7 @@ En sträcka man normalt paddlar som en tur från a till b.
     "namn": "Brännsågen-Åbyggeby",
     "gradering": { 
         "klass": "3+",
-        "lyft" ["4", "4-","5"]
+        "lyft": ["4", "4-","5"]
     }
     ,
     "langd": 6000,
@@ -82,9 +84,9 @@ En sträcka man normalt paddlar som en tur från a till b.
     },
     "flode": {
         "smhipunkt": 12020,
-        "min": 20,
-        "opt": 30,
-        "max": 100
+        "minimum": 20,
+        "optimal": 30,
+        "maximum": 100
     },
     "vattendrag": [
         {
