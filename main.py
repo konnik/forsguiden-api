@@ -3,11 +3,11 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from model import *
-from db import DummyDb
+from db import in_memory_db, postgres_db, Db
 
 
-app = FastAPI()
-db = DummyDb()
+app : FastAPI = FastAPI()
+db : Db = in_memory_db()
 
 @app.get("/")
 async def root():
