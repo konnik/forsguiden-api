@@ -1,17 +1,25 @@
+import os
 from fastapi import FastAPI, HTTPException
 from typing import List, Optional
 from pydantic import BaseModel
 
 from model import *
-from db import in_memory_db, postgres_db, Db
+from db.postgres import PostgresDb
+from db.inmemory import InMemoryDb
 
+
+db : InMemoryDb = InMemoryDb()
+db2 : PostgresDb = PostgresDb(os.getenv("DATABASE_URL", ""))
 
 app : FastAPI = FastAPI()
-db : Db = in_memory_db()
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+@app.get("/db")
+async def db_status():
+    return {"up": db2.check()}
 
 # län
 

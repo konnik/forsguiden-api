@@ -9,6 +9,7 @@ uvicorn = "*"
 gunicorn = "*"
 uvloop = "*"
 httptools = "*"
+psycopg2 = "*"
 
 [dev-packages]
 pylint = "*"
