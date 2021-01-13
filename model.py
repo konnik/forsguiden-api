@@ -70,3 +70,9 @@ class Forsstracka(BaseModel):
 
 class ForsstrackaCollection(BaseModel):
     forsstracka: List[Forsstracka]
+
+
+class DataDump(BaseModel):
+    lan: List[Lan]
+    vattendrag: List[Vattendrag]
+    forsstracka: List[Forsstracka]

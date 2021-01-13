@@ -17,11 +17,24 @@ app : FastAPI = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {
+        "message": "Välkommen till Forsguiden API",
+        "swagger": "/docs",
+        "resurser":["/lan", "/vattendrag", "/forsstracka", "/datadump"]
+        }
 
 @app.get("/db")
 async def db_status() -> DbInfo:
     return db2.info()
+
+# Dump
+
+@app.get("/datadump")
+async def dumpa_allt_data() -> DataDump:
+    return DataDump(lan=db.lista_lan(),
+                    vattendrag=db.lista_vattendrag(),
+                    forsstracka=db.lista_forsstracka())
+
 
 # Län
 
