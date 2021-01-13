@@ -18,7 +18,7 @@ app : FastAPI = FastAPI()
 @app.get("/")
 async def root():
     return {
-        "message": "Välkommen till Forsguiden API",
+        "meddelande": "Välkommen till Forsguiden API",
         "swagger": "/docs",
         "resurser":["/lan", "/vattendrag", "/forsstracka", "/datadump"]
         }
