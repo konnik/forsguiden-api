@@ -4,12 +4,14 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from model import *
-from db.postgres import PostgresDb
+from db.postgres import PostgresDb, DbInfo
 from db.inmemory import InMemoryDb
 
+import dotenv
+dotenv.load_dotenv()
 
 db : InMemoryDb = InMemoryDb()
-db2 : PostgresDb = PostgresDb(os.getenv("DATABASE_URL", ""))
+db2 : PostgresDb = PostgresDb(os.environ["DATABASE_URL"])
 
 app : FastAPI = FastAPI()
 
@@ -18,10 +20,10 @@ async def root():
     return {"message": "Hello World"}
 
 @app.get("/db")
-async def db_status():
-    return {"up": db2.check()}
+async def db_status() -> DbInfo:
+    return db2.info()
 
-# län
+# Län
 
 @app.get("/lan")
 async def lista_alla_lan() -> LanCollection:
@@ -52,8 +54,7 @@ async def uppdatera_lan(id: int, lan: Lan) -> Lan:
 
     return db.spara_lan(lan)
 
-# vattendrag
-
+# Vattendrag
 
 @app.get("/vattendrag")
 async def lista_vattendrag() -> VattendragCollection:
