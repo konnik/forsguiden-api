@@ -10,7 +10,7 @@ from db.inmemory import InMemoryDb
 import dotenv
 dotenv.load_dotenv()
 
-db : InMemoryDb = InMemoryDb()
+db : InMemoryDb = InMemoryDb(generera_testdata=True)
 db2 : PostgresDb = PostgresDb(os.environ["DATABASE_URL"])
 
 app : FastAPI = FastAPI()
@@ -83,3 +83,34 @@ async def uppdatera_vattendrag(id: int, vattendrag: Vattendrag) -> Vattendrag:
         raise HTTPException(status_code = 409, detail= f"Vattendragets id kan inte ändras.")
 
     return db.spara_vattendrag(vattendrag)
+
+
+# Forssträcka
+
+@app.get("/forsstracka")
+async def lista_forsstrackor() -> ForsstrackaCollection:
+    return ForsstrackaCollection(forsstracka=db.lista_forsstracka())
+
+@app.get("/forsstracka/{id}")
+async def hamta_forsstracka_med_id(id: int) -> Forsstracka:
+    forsstracka = db.hamta_forsstracka(id)
+    if forsstracka is None:
+        raise HTTPException(status_code=404)
+    return forsstracka
+
+@app.post("/forsstracka")
+async def skapa_ny_forsstracka(forsstracka: Forsstracka) -> Forsstracka:
+    # ignorera eventuellt id i requestet
+    forsstracka.id = -1
+    return db.spara_forsstracka(forsstracka)
+
+@app.put("/forsstracka/{id}")
+async def uppdatera_forsstracka(id: int, forsstracka: Forsstracka) -> Forsstracka:
+    x : Optional[Forsstracka] = db.hamta_forsstracka(id)
+    if x is None:
+        raise HTTPException(status_code = 404, detail= f"Det finns inget forsstracka med id {id}.")
+
+    if forsstracka.id != id:
+        raise HTTPException(status_code = 409, detail= f"Forssträckans id kan inte ändras.")
+
+    return db.spara_forsstracka(forsstracka)

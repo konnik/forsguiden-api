@@ -49,6 +49,14 @@ class Flode(BaseModel):
     optimal: int
     maximum: int
 
+class ForsstrackaVattendrag(BaseModel):
+    id: int
+    namn: str
+
+class ForsstrackaLan(BaseModel):
+    id: int
+    namn: str
+
 class Forsstracka(BaseModel):
     id: int
     namn: str
@@ -57,6 +65,8 @@ class Forsstracka(BaseModel):
     fallhojd: int
     koordinater: Position
     flode: Flode
-    vattendrag: List[Vattendrag]
-    lan: List[Lan]
+    vattendrag: List[ForsstrackaVattendrag]
+    lan: List[ForsstrackaLan]
 
+class ForsstrackaCollection(BaseModel):
+    forsstracka: List[Forsstracka]
