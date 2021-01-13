@@ -14,6 +14,12 @@ class Vattendrag(BaseModel):
     beskrivning: str
     lan: List[Lan]
 
+class VattendragCollection(BaseModel):
+    vattendrag: List[Vattendrag]
+
+class LanCollection(BaseModel):
+    lan: List[Lan]
+
 class Grad(str, Enum):
     ett = '1'
     tva = '2'

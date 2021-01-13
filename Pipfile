@@ -11,6 +11,8 @@ uvloop = "*"
 httptools = "*"
 
 [dev-packages]
+pylint = "*"
+mypy = "*"
 
 [requires]
 python_version = "3"

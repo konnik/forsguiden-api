@@ -15,32 +15,62 @@ async def root():
 
 # län
 
-class LanCollection(BaseModel):
-    lan: List[Lan]
-
 @app.get("/lan")
-async def lista_lan() -> LanCollection:
-    return LanCollection(lan=db.lanAlla())
+async def lista_alla_lan() -> LanCollection:
+    return LanCollection(lan=db.lista_lan())
 
 @app.get("/lan/{id}")
 async def hamta_lan_med_id(id: int) -> Lan:
-    lan = db.lanMedId(id)
+    lan = db.hamta_lan(id)
     if lan is None:
         raise HTTPException(status_code=404)
     return lan
 
+@app.post("/lan")
+async def skapa_nytt_lan(lan: Lan) -> Lan:
+    x : Optional[Lan] = db.hamta_lan(lan.id)
+    if x is not None:
+        raise HTTPException(status_code = 409, detail= f"Det finns redan ett län med id {x.id}: {x.namn}")
+    return db.spara_lan(lan)
+
+@app.put("/lan/{id}")
+async def uppdatera_lan(id: int, lan: Lan) -> Lan:
+    x : Optional[Lan] = db.hamta_lan(id)
+    if x is None:
+        raise HTTPException(status_code = 404, detail= f"Det finns inget län med id {id}.")
+
+    if lan.id != id:
+        raise HTTPException(status_code = 409, detail= f"Länets id kan inte ändras.")
+
+    return db.spara_lan(lan)
+
 # vattendrag
 
-class VattendragCollection(BaseModel):
-    vattendrag: List[Vattendrag]
 
 @app.get("/vattendrag")
-async def lista_vattendrag() -> LanCollection:
-    return VattendragCollection(vattendrag=db.vattendragAlla())
+async def lista_vattendrag() -> VattendragCollection:
+    return VattendragCollection(vattendrag=db.lista_vattendrag())
 
 @app.get("/vattendrag/{id}")
 async def hamta_vattendrag_med_id(id: int) -> Vattendrag:
-    vattendrag = db.vattendragMedId(id)
+    vattendrag = db.hamta_vattendrag(id)
     if vattendrag is None:
         raise HTTPException(status_code=404)
     return vattendrag
+
+@app.post("/vattendrag")
+async def skapa_nytt_vattendrag(vattendrag: Vattendrag) -> Vattendrag:
+    # ignorera eventuellt id i requestet
+    vattendrag.id = -1
+    return db.spara_vattendrag(vattendrag)
+
+@app.put("/vattendrag/{id}")
+async def uppdatera_vattendrag(id: int, vattendrag: Vattendrag) -> Vattendrag:
+    x : Optional[Vattendrag] = db.hamta_vattendrag(id)
+    if x is None:
+        raise HTTPException(status_code = 404, detail= f"Det finns inget vattendrag med id {id}.")
+
+    if vattendrag.id != id:
+        raise HTTPException(status_code = 409, detail= f"Vattendragets id kan inte ändras.")
+
+    return db.spara_vattendrag(vattendrag)
