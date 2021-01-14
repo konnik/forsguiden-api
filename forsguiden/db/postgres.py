@@ -55,3 +55,11 @@ class PostgresDb(Db):
                             (nytt_lan.id, f"{nytt_lan.id:02}", nytt_lan.namn))
 
         return nytt_lan
+
+    def radera_lan(self, id) -> bool:
+        with self.conn:
+            with self.conn.cursor() as cur:
+                cur.execute("delete from lan where id=%s;", (id,))
+                antal_raderade = cur.rowcount
+
+        return antal_raderade > 0

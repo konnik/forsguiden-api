@@ -12,6 +12,9 @@ class Db():
     def spara_vattendrag(self, nytt_vattendrag: Vattendrag) -> Vattendrag:
         raise NotImplemented
 
+    def radera_vattendrag(self, id: int) -> bool:
+        raise NotImplemented
+
     # Län
     def lista_lan(self) -> List[Lan]:
         raise NotImplemented
@@ -22,6 +25,9 @@ class Db():
     def spara_lan(self, nytt_lan: Lan) -> Lan:
         raise NotImplemented
 
+    def radera_lan(self, id) -> bool:
+        raise NotImplemented
+
     # Forssträcka
     def lista_forsstracka(self) -> List[Forsstracka]:
         raise NotImplemented
@@ -30,4 +36,7 @@ class Db():
         raise NotImplemented
 
     def spara_forsstracka(self, ny_forsstracka: Forsstracka) -> Forsstracka:
+        raise NotImplemented
+
+    def radera_forsstracka(self, id: int) -> bool:
         raise NotImplemented

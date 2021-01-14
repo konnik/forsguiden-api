@@ -74,7 +74,7 @@ async def skapa_nytt_lan(lan: Lan, db: Db = Depends(database)) -> Lan:
     return db.spara_lan(lan)
 
 @app.put("/lan/{id}")
-async def uppdatera_lan(id: int, lan: Lan) -> Lan:
+async def uppdatera_lan(id: int, lan: Lan, db: Db = Depends(database)) -> Lan:
     x : Optional[Lan] = db.hamta_lan(id)
     if x is None:
         raise HTTPException(status_code = 404, detail= f"Det finns inget län med id {id}.")
@@ -83,6 +83,14 @@ async def uppdatera_lan(id: int, lan: Lan) -> Lan:
         raise HTTPException(status_code = 409, detail= f"Länets id kan inte ändras.")
 
     return db.spara_lan(lan)
+
+@app.delete("/lan/{id}",status_code=204)
+async def radera_lan(id: int, db: Db = Depends(database)):
+    x : Optional[Lan] = db.hamta_lan(id)
+    if x is None:
+        raise HTTPException(status_code = 404, detail= f"Det finns inget län med id {id}.")
+
+    db.radera_lan(id)
 
 # Vattendrag
 
