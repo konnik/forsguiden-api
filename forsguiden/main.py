@@ -32,48 +32,28 @@ async def startup():
 async def shutdown():
     app.state.pool.closeall()
 
-@app.get("/")
-async def root():
-    return {
-        "meddelande": "Välkommen till Forsguiden API",
-        "swagger": "/docs",
-        "resurser":["/lan", "/vattendrag", "/forsstracka", "/datadump"]
-        }
-
-@app.get("/db")
-async def db_status( db2: PostgresDb = Depends(database)) -> DbInfo:
-    return db2.info()
-
-# Dump
-
-@app.get("/datadump")
-async def dumpa_allt_data() -> DataDump:
-    return DataDump(lan=db.lista_lan(),
-                    vattendrag=db.lista_vattendrag(),
-                    forsstracka=db.lista_forsstracka())
-
 
 # Län
 
-@app.get("/lan")
+@app.get("/lan", tags=["Län"])
 async def lista_alla_lan(db: Db = Depends(database)) -> LanCollection:
     return LanCollection(lan=db.lista_lan())
 
-@app.get("/lan/{id}")
+@app.get("/lan/{id}", tags=["Län"])
 async def hamta_lan_med_id(id: int, db: Db = Depends(database)) -> Lan:
     lan = db.hamta_lan(id)
     if lan is None:
         raise HTTPException(status_code=404)
     return lan
 
-@app.post("/lan")
+@app.post("/lan", tags=["Län"])
 async def skapa_nytt_lan(lan: Lan, db: Db = Depends(database)) -> Lan:
     x : Optional[Lan] = db.hamta_lan(lan.id)
     if x is not None:
         raise HTTPException(status_code = 409, detail= f"Det finns redan ett län med id {x.id}: {x.namn}")
     return db.spara_lan(lan)
 
-@app.put("/lan/{id}")
+@app.put("/lan/{id}", tags=["Län"])
 async def uppdatera_lan(id: int, lan: Lan, db: Db = Depends(database)) -> Lan:
     x : Optional[Lan] = db.hamta_lan(id)
     if x is None:
@@ -84,7 +64,7 @@ async def uppdatera_lan(id: int, lan: Lan, db: Db = Depends(database)) -> Lan:
 
     return db.spara_lan(lan)
 
-@app.delete("/lan/{id}",status_code=204)
+@app.delete("/lan/{id}",status_code=204, tags=["Län"])
 async def radera_lan(id: int, db: Db = Depends(database)):
     x : Optional[Lan] = db.hamta_lan(id)
     if x is None:
@@ -94,24 +74,24 @@ async def radera_lan(id: int, db: Db = Depends(database)):
 
 # Vattendrag
 
-@app.get("/vattendrag")
+@app.get("/vattendrag", tags=["Vattendrag"])
 async def lista_vattendrag() -> VattendragCollection:
     return VattendragCollection(vattendrag=db.lista_vattendrag())
 
-@app.get("/vattendrag/{id}")
+@app.get("/vattendrag/{id}", tags=["Vattendrag"])
 async def hamta_vattendrag_med_id(id: int) -> Vattendrag:
     vattendrag = db.hamta_vattendrag(id)
     if vattendrag is None:
         raise HTTPException(status_code=404)
     return vattendrag
 
-@app.post("/vattendrag")
+@app.post("/vattendrag", tags=["Vattendrag"])
 async def skapa_nytt_vattendrag(vattendrag: Vattendrag) -> Vattendrag:
     # ignorera eventuellt id i requestet
     vattendrag.id = -1
     return db.spara_vattendrag(vattendrag)
 
-@app.put("/vattendrag/{id}")
+@app.put("/vattendrag/{id}", tags=["Vattendrag"])
 async def uppdatera_vattendrag(id: int, vattendrag: Vattendrag) -> Vattendrag:
     x : Optional[Vattendrag] = db.hamta_vattendrag(id)
     if x is None:
@@ -125,24 +105,24 @@ async def uppdatera_vattendrag(id: int, vattendrag: Vattendrag) -> Vattendrag:
 
 # Forssträcka
 
-@app.get("/forsstracka")
+@app.get("/forsstracka", tags=["Forssträcka"])
 async def lista_forsstrackor() -> ForsstrackaCollection:
     return ForsstrackaCollection(forsstracka=db.lista_forsstracka())
 
-@app.get("/forsstracka/{id}")
+@app.get("/forsstracka/{id}", tags=["Forssträcka"])
 async def hamta_forsstracka_med_id(id: int) -> Forsstracka:
     forsstracka = db.hamta_forsstracka(id)
     if forsstracka is None:
         raise HTTPException(status_code=404)
     return forsstracka
 
-@app.post("/forsstracka")
+@app.post("/forsstracka", tags=["Forssträcka"])
 async def skapa_ny_forsstracka(forsstracka: Forsstracka) -> Forsstracka:
     # ignorera eventuellt id i requestet
     forsstracka.id = -1
     return db.spara_forsstracka(forsstracka)
 
-@app.put("/forsstracka/{id}")
+@app.put("/forsstracka/{id}", tags=["Forssträcka"])
 async def uppdatera_forsstracka(id: int, forsstracka: Forsstracka) -> Forsstracka:
     x : Optional[Forsstracka] = db.hamta_forsstracka(id)
     if x is None:
@@ -152,3 +132,25 @@ async def uppdatera_forsstracka(id: int, forsstracka: Forsstracka) -> Forsstrack
         raise HTTPException(status_code = 409, detail= f"Forssträckans id kan inte ändras.")
 
     return db.spara_forsstracka(forsstracka)
+
+
+# Övrigt
+
+@app.get("/", tags=["Övrigt"])
+async def root():
+    return {
+        "meddelande": "Välkommen till Forsguiden API",
+        "swagger": "/docs",
+        "resurser":["/lan", "/vattendrag", "/forsstracka", "/datadump"]
+        }
+
+@app.get("/db", tags=["Övrigt"])
+async def db_status( db2: PostgresDb = Depends(database)) -> DbInfo:
+    return db2.info()
+
+@app.get("/datadump", tags=["Övrigt"])
+async def dumpa_allt_data() -> DataDump:
+    return DataDump(lan=db.lista_lan(),
+                    vattendrag=db.lista_vattendrag(),
+                    forsstracka=db.lista_forsstracka())
+
