@@ -56,11 +56,11 @@ async def dumpa_allt_data() -> DataDump:
 # Län
 
 @app.get("/lan")
-async def lista_alla_lan(db : Db = Depends(database)) -> LanCollection:
+async def lista_alla_lan(db: Db = Depends(database)) -> LanCollection:
     return LanCollection(lan=db.lista_lan())
 
 @app.get("/lan/{id}")
-async def hamta_lan_med_id(id: int) -> Lan:
+async def hamta_lan_med_id(id: int, db: Db = Depends(database)) -> Lan:
     lan = db.hamta_lan(id)
     if lan is None:
         raise HTTPException(status_code=404)

@@ -37,3 +37,12 @@ class PostgresDb(Db):
         with self.conn.cursor() as cursor:
             cursor.execute("select id, namn from lan;")
             return [ Lan(id=id, namn=namn) for (id, namn) in cursor] 
+
+    def hamta_lan(self, id: int) -> Optional[Lan]:
+        with self.conn.cursor() as cursor:
+            cursor.execute("select id, namn from lan where id=%s;", (id,))
+            if cursor.rowcount == 0:
+                return None
+            else:
+                (id, namn) = cursor.fetchone()
+                return Lan(id=id, namn=namn)
