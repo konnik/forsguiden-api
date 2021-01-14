@@ -11,7 +11,7 @@ from forsguiden.db.inmemory import InMemoryDb
 import dotenv
 dotenv.load_dotenv()
 
-app : FastAPI = FastAPI(title = "Forsguiden API", description="Målet med Forsguiden API är att samla all information om sveriges forspaddlingsvatten och göra det tillgängligt i ett strukturerat, öppet och väldokumenterat format så att vem som helst ska kunna använda informationen för att bygga egna smarta webapplikationer och mobilappar.", version="0.1-UTRABETAs")
+app : FastAPI = FastAPI(title = "Forsguiden API", description="Målet med Forsguiden API är att samla all information om sveriges forspaddlingsvatten och göra det tillgängligt i ett strukturerat, öppet och väldokumenterat format så att vem som helst ska kunna använda informationen för att bygga egna smarta webapplikationer och mobilappar.", version="0.1-UTRABETA")
 
 db : InMemoryDb = InMemoryDb(generera_testdata=True)
 
