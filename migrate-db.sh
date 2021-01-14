@@ -7,7 +7,11 @@ if [ -f .env ]; then
     source .env
 fi
 
-export FLYWAY_URL=$JDBC_DATABASE_URL
+if [[ -z "$JDBC_DATABASE_URL" ]]; then
+   echo "JDBC_DATABASE_URL måste sättas"
+   exit 1
+fi
 
-echo "Kör flyway med $FLYWAY_URL"
-./mvnw flyway:migrate -Dflyway.locations=filesystem:sql
+#export FLYWAY_URL=$JDBC_DATABASE_URL
+
+./mvnw flyway:migrate -Dflyway.locations=filesystem:sql -Dflyway.url=$JDBC_DATABASE_URL
