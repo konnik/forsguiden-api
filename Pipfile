@@ -16,6 +16,7 @@ typing-extensions = "*"
 [dev-packages]
 pylint = "*"
 mypy = "*"
+black = "*"
 
 [requires]
 python_version = "3"

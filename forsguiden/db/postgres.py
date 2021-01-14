@@ -8,6 +8,7 @@ from typing import List, Optional, Any
 class DbInfo(BaseModel):
     up: bool
     info: str
+    lan: int
 
 
 class PostgresDb(Db):
@@ -37,9 +38,11 @@ class PostgresDb(Db):
                                         database=self.database)
 
             cursor = connection.cursor()
-            cursor.execute("SELECT version();")
+            cursor.execute("select version();")
             (version,) = cursor.fetchone()
-            return DbInfo(up=True, info = version)
+            cursor.execute("select count(*) from lan;")
+            (antal_lan,) = cursor.fetchone()
+            return DbInfo(up=True, info = version, lan=antal_lan)
 
         except psycopg2.Error as e:
             return DbInfo(up=False, info = str(e))
