@@ -10,4 +10,4 @@ fi
 export FLYWAY_URL=$JDBC_DATABASE_URL
 
 echo "Kör flyway med $FLYWAY_URL"
-mvn flyway:migrate -Dflyway.locations=filesystem:sql
+./mvnw flyway:migrate -Dflyway.locations=filesystem:sql
