@@ -46,3 +46,12 @@ class PostgresDb(Db):
             else:
                 (id, namn) = cursor.fetchone()
                 return Lan(id=id, namn=namn)
+    
+    def spara_lan(self, nytt_lan: Lan) -> Lan:
+        with self.conn:
+            with self.conn.cursor() as cur:
+                cur.execute("delete from lan where id=%s;", (nytt_lan.id,))
+                cur.execute("insert into lan (id, lankod, namn) values (%s, %s, %s);", 
+                            (nytt_lan.id, f"{nytt_lan.id:02}", nytt_lan.namn))
+
+        return nytt_lan

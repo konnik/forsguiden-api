@@ -67,7 +67,7 @@ async def hamta_lan_med_id(id: int, db: Db = Depends(database)) -> Lan:
     return lan
 
 @app.post("/lan")
-async def skapa_nytt_lan(lan: Lan) -> Lan:
+async def skapa_nytt_lan(lan: Lan, db: Db = Depends(database)) -> Lan:
     x : Optional[Lan] = db.hamta_lan(lan.id)
     if x is not None:
         raise HTTPException(status_code = 409, detail= f"Det finns redan ett län med id {x.id}: {x.namn}")
