@@ -1,6 +1,7 @@
 from typing import List, Optional
-from model import *
-from db import Db
+
+from forsguiden.model import *
+from forsguiden.db import Db
 
 class InMemoryDb(Db):
     lan: List[Lan]

@@ -1,9 +1,8 @@
-from re import VERBOSE
 import psycopg2
 import urllib.parse as urlparse
 
 from pydantic.main import BaseModel
-from db import Db
+from forsguiden.db import Db
 from typing import List, Optional, Any
 
 class DbInfo(BaseModel):

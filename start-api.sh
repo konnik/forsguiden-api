@@ -1,3 +1,3 @@
 #!/bin/bash
 
-uvicorn main:app --reload
+uvicorn forsguiden.main:app --reload

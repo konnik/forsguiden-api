@@ -1,5 +1,5 @@
 from typing import List, Optional
-from model import *
+from forsguiden.model import *
 
 class Db():
     # Vattendrag

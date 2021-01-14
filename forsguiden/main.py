@@ -3,9 +3,9 @@ from fastapi import FastAPI, HTTPException
 from typing import List, Optional
 from pydantic import BaseModel
 
-from model import *
-from db.postgres import PostgresDb, DbInfo
-from db.inmemory import InMemoryDb
+from forsguiden.model import *
+from forsguiden.db.postgres import PostgresDb, DbInfo
+from forsguiden.db.inmemory import InMemoryDb
 
 import dotenv
 dotenv.load_dotenv()
