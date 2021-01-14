@@ -1,19 +1,36 @@
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Request
 from typing import List, Optional
 from pydantic import BaseModel
+import psycopg2.pool
 
 from forsguiden.model import *
+from forsguiden.db import Db
 from forsguiden.db.postgres import PostgresDb, DbInfo
 from forsguiden.db.inmemory import InMemoryDb
-
 import dotenv
 dotenv.load_dotenv()
 
-db : InMemoryDb = InMemoryDb(generera_testdata=True)
-db2 : PostgresDb = PostgresDb(os.environ["DATABASE_URL"])
-
 app : FastAPI = FastAPI()
+
+db : InMemoryDb = InMemoryDb(generera_testdata=True)
+
+
+async def database(request: Request):
+    conn = request.app.state.pool.getconn()
+    try:
+        yield PostgresDb(conn)
+    finally:
+        request.app.state.pool.putconn(conn)
+
+@app.on_event("startup")
+async def startup():
+    app.state.pool = psycopg2.pool.ThreadedConnectionPool(1,20,os.environ["DATABASE_URL"]);
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    app.state.pool.closeall()
 
 @app.get("/")
 async def root():
@@ -24,7 +41,7 @@ async def root():
         }
 
 @app.get("/db")
-async def db_status() -> DbInfo:
+async def db_status( db2: PostgresDb = Depends(database)) -> DbInfo:
     return db2.info()
 
 # Dump
@@ -39,7 +56,7 @@ async def dumpa_allt_data() -> DataDump:
 # Län
 
 @app.get("/lan")
-async def lista_alla_lan() -> LanCollection:
+async def lista_alla_lan(db : Db = Depends(database)) -> LanCollection:
     return LanCollection(lan=db.lista_lan())
 
 @app.get("/lan/{id}")
