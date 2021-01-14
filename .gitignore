@@ -2,3 +2,4 @@ node_modules
 dist
 .vscode
 .env
+flyway-7.5.0/
