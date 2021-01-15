@@ -39,29 +39,3 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     app.state.pool.closeall()
-
-
-# Övrigt
-
-
-@app.get("/", tags=["Övrigt"])
-async def root():
-    return {
-        "meddelande": "Välkommen till Forsguiden API",
-        "swagger": "/docs",
-        "resurser": ["/lan", "/vattendrag", "/forsstracka", "/datadump"],
-    }
-
-
-@app.get("/db", tags=["Övrigt"])
-async def db_status(db: PostgresDb = Depends(on_database)) -> DbInfo:
-    return db.info()
-
-
-@app.get("/datadump", tags=["Övrigt"])
-async def dumpa_allt_data() -> DataDump:
-    return DataDump(
-        lan=db.lista_lan(),
-        vattendrag=db.lista_vattendrag(),
-        forsstracka=db.lista_forsstracka(),
-    )
