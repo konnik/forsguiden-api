@@ -13,6 +13,7 @@ psycopg2 = "*"
 python-dotenv = "*"
 typing-extensions = "*"
 dataclasses = "*"
+python-jose = {extras = ["cryptography"],version = "*"}
 
 [dev-packages]
 pylint = "*"

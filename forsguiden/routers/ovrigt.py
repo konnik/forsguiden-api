@@ -8,6 +8,7 @@ from forsguiden.model import *
 from forsguiden.db import Db
 from forsguiden.db.postgres import DbInfo
 
+
 router = fastapi.APIRouter()
 
 # Övrigt

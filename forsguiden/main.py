@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi.responses import JSONResponse
 from typing import List, Optional
 from pydantic import BaseModel
 import psycopg2.pool
@@ -27,6 +28,34 @@ app: FastAPI = FastAPI(
 app.include_router(lan_router)
 app.include_router(vattendrag_router)
 app.include_router(forsstracka_router)
+
+
+# test av
+from forsguiden.auth import *
+
+AUTH0_DOMAIN = "forsguiden.eu.auth0.com"
+
+jwks = get_jwks(AUTH0_DOMAIN)
+autentiserad_anvandare = auth0_token_authenticator_builder(
+    api_audience="https://forsguiden.se/api",
+    auth0_domain=AUTH0_DOMAIN,
+    algorithms=["RS256"],
+    jwks=get_jwks(AUTH0_DOMAIN),
+    oauth2_scheme=OAuth2AuthorizationCodeBearer(
+        authorizationUrl="https://forsguiden.eu.auth0.com/authorize",
+        tokenUrl="https://forsguiden.eu.auth0.com/oauth/token",
+    ),
+)
+
+
+@app.exception_handler(AuthError)
+def handle_auth_error(request: Request, ex: AuthError):
+    return JSONResponse(status_code=ex.status_code, content=ex.error)
+
+
+@app.get("/hemlig", dependencies=[Depends(autentiserad_anvandare)])
+async def hemlig():
+    return {"meddelande": "Superhemligt..."}
 
 
 @app.on_event("startup")
