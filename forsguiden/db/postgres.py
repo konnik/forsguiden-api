@@ -8,10 +8,14 @@ from typing import List, Optional, Any
 from forsguiden.model import *
 
 
+class DbStats(BaseModel):
+    lan: int = None
+
+
 class DbInfo(BaseModel):
     up: bool
     info: str
-    lan: int
+    stats: Optional[DbStats] = None
 
 
 class PostgresDb(Db):
@@ -28,7 +32,7 @@ class PostgresDb(Db):
                     (version,) = cursor.fetchone()
                     cursor.execute("select count(*) from lan;")
                     (antal_lan,) = cursor.fetchone()
-                    return DbInfo(up=True, info=version, lan=antal_lan)
+                    return DbInfo(up=True, info=version, stats=DbStats(lan=antal_lan))
 
         except psycopg2.Error as e:
             return DbInfo(up=False, info=str(e))
