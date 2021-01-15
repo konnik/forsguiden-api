@@ -7,6 +7,7 @@ from typing import List, Optional, Any
 
 from forsguiden.model import *
 
+
 class DbInfo(BaseModel):
     up: bool
     info: str
@@ -27,16 +28,15 @@ class PostgresDb(Db):
                     (version,) = cursor.fetchone()
                     cursor.execute("select count(*) from lan;")
                     (antal_lan,) = cursor.fetchone()
-                    return DbInfo(up=True, info = version, lan=antal_lan)
+                    return DbInfo(up=True, info=version, lan=antal_lan)
 
         except psycopg2.Error as e:
-            return DbInfo(up=False, info = str(e))
-
+            return DbInfo(up=False, info=str(e))
 
     def lista_lan(self) -> List[Lan]:
         with self.conn.cursor() as cursor:
             cursor.execute("select id, namn from lan;")
-            return [ Lan(id=id, namn=namn) for (id, namn) in cursor] 
+            return [Lan(id=id, namn=namn) for (id, namn) in cursor]
 
     def hamta_lan(self, id: int) -> Optional[Lan]:
         with self.conn.cursor() as cursor:
@@ -46,13 +46,15 @@ class PostgresDb(Db):
             else:
                 (id, namn) = cursor.fetchone()
                 return Lan(id=id, namn=namn)
-    
+
     def spara_lan(self, nytt_lan: Lan) -> Lan:
         with self.conn:
             with self.conn.cursor() as cur:
                 cur.execute("delete from lan where id=%s;", (nytt_lan.id,))
-                cur.execute("insert into lan (id, lankod, namn) values (%s, %s, %s);", 
-                            (nytt_lan.id, f"{nytt_lan.id:02}", nytt_lan.namn))
+                cur.execute(
+                    "insert into lan (id, lankod, namn) values (%s, %s, %s);",
+                    (nytt_lan.id, f"{nytt_lan.id:02}", nytt_lan.namn),
+                )
 
         return nytt_lan
 

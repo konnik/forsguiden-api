@@ -1,14 +1,15 @@
 from typing import List, Optional
 from forsguiden.model import *
 
-class Db():
+
+class Db:
     # Vattendrag
     def lista_vattendrag(self) -> List[Vattendrag]:
         raise NotImplemented
 
     def hamta_vattendrag(self, id: int) -> Optional[Vattendrag]:
         raise NotImplemented
-    
+
     def spara_vattendrag(self, nytt_vattendrag: Vattendrag) -> Vattendrag:
         raise NotImplemented
 

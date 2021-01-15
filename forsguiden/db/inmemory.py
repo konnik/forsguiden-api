@@ -3,12 +3,13 @@ from typing import List, Optional
 from forsguiden.model import *
 from forsguiden.db import Db
 
+
 class InMemoryDb(Db):
     lan: List[Lan]
     vattendrag: List[Vattendrag]
     forsstracka: List[Forsstracka]
 
-    def __init__(self, generera_testdata = False) -> None:
+    def __init__(self, generera_testdata=False) -> None:
         self.lan = []
         self.vattendrag = []
         self.forsstracka = []
@@ -22,8 +23,8 @@ class InMemoryDb(Db):
         return self.vattendrag
 
     def hamta_vattendrag(self, id: int) -> Optional[Vattendrag]:
-        return next((x for x in self.vattendrag if x .id == id), None)
-    
+        return next((x for x in self.vattendrag if x.id == id), None)
+
     def spara_vattendrag(self, nytt_vattendrag: Vattendrag) -> Vattendrag:
         if nytt_vattendrag.id == -1:
             nytt_vattendrag.id = max(x.id for x in self.vattendrag) + 1
@@ -69,53 +70,71 @@ class InMemoryDb(Db):
         self.spara_lan(Lan(id=21, namn="Gävleborg"))
         self.spara_lan(Lan(id=23, namn="Jämtland"))
 
-        self.spara_vattendrag(Vattendrag(id=2,
-                                      namn="Gavleån",
-                                      beskrivning="Hela Gavleån är ca 2 mil lång och rinner från Storsjön till havet i Gävlebukten. Det finns 8 kraftverk på sträckan och den enda del som är intressant ur forspaddlingssynpunkt är nedströms det sista kraftverket i Boulognerskogen i centrala Gävle.",
-                                      lan=[self.hamta_lan(21)]
-                                      ))
-                                      
-        self.spara_vattendrag(Vattendrag(id=1,
-                                      namn="Testeboån",
-                                      beskrivning="Ån rinner genom ett flackt skogs- och myrlandskap mellan Ockelbo och Gävle. Testeboån var tidigare flottled och spår efter detta finns kvar på sina håll.",
-                                      lan=[self.hamta_lan(21)]
-                                      ))
+        self.spara_vattendrag(
+            Vattendrag(
+                id=2,
+                namn="Gavleån",
+                beskrivning="Hela Gavleån är ca 2 mil lång och rinner från Storsjön till havet i Gävlebukten. Det finns 8 kraftverk på sträckan och den enda del som är intressant ur forspaddlingssynpunkt är nedströms det sista kraftverket i Boulognerskogen i centrala Gävle.",
+                lan=[self.hamta_lan(21)],
+            )
+        )
 
-        self.spara_vattendrag(Vattendrag(id=3,
-                                      namn="Vålån",
-                                      beskrivning="Vålån är en fantastisk sträcka för de som gillar brutal utförspaddling. Sträckan är 7 km med en fallhöjd av 80 m. Grad 1 - 5. Den innehåller sex svåra passager.",
-                                      lan=[self.hamta_lan(23)]
-                                      ))
-        
-        self.spara_forsstracka(Forsstracka(id=1,
+        self.spara_vattendrag(
+            Vattendrag(
+                id=1,
+                namn="Testeboån",
+                beskrivning="Ån rinner genom ett flackt skogs- och myrlandskap mellan Ockelbo och Gävle. Testeboån var tidigare flottled och spår efter detta finns kvar på sina håll.",
+                lan=[self.hamta_lan(21)],
+            )
+        )
+
+        self.spara_vattendrag(
+            Vattendrag(
+                id=3,
+                namn="Vålån",
+                beskrivning="Vålån är en fantastisk sträcka för de som gillar brutal utförspaddling. Sträckan är 7 km med en fallhöjd av 80 m. Grad 1 - 5. Den innehåller sex svåra passager.",
+                lan=[self.hamta_lan(23)],
+            )
+        )
+
+        self.spara_forsstracka(
+            Forsstracka(
+                id=1,
                 namn="Brännsågen-Åbyggeby",
                 langd=6000,
                 fallhojd=28,
                 gradering=Gradering(klass=Grad.tva, lyft=[]),
                 koordinater=Position(lat=60.75627, long=17.03825),
-                flode = Flode(smhipunkt=12020, minimum=20, maximum=100, optimal=30),
+                flode=Flode(smhipunkt=12020, minimum=20, maximum=100, optimal=30),
                 vattendrag=[self.hamta_vattendrag(1)],
-                lan=[self.hamta_lan(21)]
-                ))
+                lan=[self.hamta_lan(21)],
+            )
+        )
 
-        self.spara_forsstracka(Forsstracka(id=3,
+        self.spara_forsstracka(
+            Forsstracka(
+                id=3,
                 namn="Vävaren",
                 gradering=Gradering(klass=Grad.tre_plus, lyft=[]),
                 langd=350,
                 fallhojd=12,
                 koordinater=Position(lat=60.69801, long=17.15803),
-                flode = Flode(smhipunkt=12020, minimum=20, maximum=40, optimal=25),
+                flode=Flode(smhipunkt=12020, minimum=20, maximum=40, optimal=25),
                 vattendrag=[self.hamta_vattendrag(1)],
-                lan=[self.hamta_lan(21)]
-                ))
+                lan=[self.hamta_lan(21)],
+            )
+        )
 
-        self.spara_forsstracka(Forsstracka(id=4,
+        self.spara_forsstracka(
+            Forsstracka(
+                id=4,
                 namn="Konserthuset",
                 gradering=Gradering(klass=Grad.tva, lyft=[]),
                 langd=1000,
                 fallhojd=5,
                 koordinater=Position(lat=60.67298, long=17.13364),
-                flode = Flode(smhipunkt=11802, minimum=30, maximum=100, optimal=60),
+                flode=Flode(smhipunkt=11802, minimum=30, maximum=100, optimal=60),
                 vattendrag=[self.hamta_vattendrag(2)],
-                lan=[self.hamta_lan(21)]
-                ))
+                lan=[self.hamta_lan(21)],
+            )
+        )
