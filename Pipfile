@@ -12,6 +12,7 @@ httptools = "*"
 psycopg2 = "*"
 python-dotenv = "*"
 typing-extensions = "*"
+dataclasses = "*"
 
 [dev-packages]
 pylint = "*"
@@ -20,3 +21,6 @@ black = "*"
 
 [requires]
 python_version = "3"
+
+[pipenv]
+allow_prereleases = true
