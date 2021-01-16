@@ -9,7 +9,8 @@ from forsguiden.model import *
 
 
 class DbStats(BaseModel):
-    lan: int = None
+    lan: int
+    vattendrag: int
 
 
 class DbInfo(BaseModel):
@@ -32,7 +33,13 @@ class PostgresDb(Db):
                     (version,) = cursor.fetchone()
                     cursor.execute("select count(*) from lan;")
                     (antal_lan,) = cursor.fetchone()
-                    return DbInfo(up=True, info=version, stats=DbStats(lan=antal_lan))
+                    cursor.execute("select count(*) from vattendrag;")
+                    (antal_vattendrag,) = cursor.fetchone()
+                    return DbInfo(
+                        up=True,
+                        info=version,
+                        stats=DbStats(lan=antal_lan, vattendrag=antal_vattendrag),
+                    )
 
         except psycopg2.Error as e:
             return DbInfo(up=False, info=str(e))
