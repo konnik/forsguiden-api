@@ -7,17 +7,17 @@ from forsguiden.dependencies import on_database, on_inMemDb
 from forsguiden.model import *
 from forsguiden.db import Db
 
-router = fastapi.APIRouter()
+router = fastapi.APIRouter(tags=["Forssträcka"])
 
 # Forssträcka
 
 
-@router.get("/forsstracka", tags=["Forssträcka"])
+@router.get("/forsstracka")
 async def lista_forsstrackor(db: Db = Depends(on_inMemDb)) -> ForsstrackaCollection:
     return ForsstrackaCollection(forsstracka=db.lista_forsstracka())
 
 
-@router.get("/forsstracka/{id}", tags=["Forssträcka"])
+@router.get("/forsstracka/{id}")
 async def hamta_forsstracka_med_id(
     id: int, db: Db = Depends(on_inMemDb)
 ) -> Forsstracka:
@@ -27,7 +27,7 @@ async def hamta_forsstracka_med_id(
     return forsstracka
 
 
-@router.post("/forsstracka", tags=["Forssträcka"])
+@router.post("/forsstracka")
 async def skapa_ny_forsstracka(
     forsstracka: Forsstracka, db: Db = Depends(on_inMemDb)
 ) -> Forsstracka:
@@ -36,7 +36,7 @@ async def skapa_ny_forsstracka(
     return db.spara_forsstracka(forsstracka)
 
 
-@router.put("/forsstracka/{id}", tags=["Forssträcka"])
+@router.put("/forsstracka/{id}")
 async def uppdatera_forsstracka(
     id: int, forsstracka: Forsstracka, db: Db = Depends(on_inMemDb)
 ) -> Forsstracka:

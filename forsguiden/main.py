@@ -13,6 +13,9 @@ from forsguiden.db.inmemory import InMemoryDb
 from forsguiden.routers.lan import router as lan_router
 from forsguiden.routers.vattendrag import router as vattendrag_router
 from forsguiden.routers.forsstracka import router as forsstracka_router
+from forsguiden.routers.ovrigt import router as ovrigt_router
+from forsguiden.auth import AuthError
+from forsguiden.security import inloggad, roll
 
 import dotenv
 
@@ -27,41 +30,7 @@ app: FastAPI = FastAPI(
 app.include_router(lan_router)
 app.include_router(vattendrag_router)
 app.include_router(forsstracka_router)
-
-
-# test att integrera med auth0
-from forsguiden.auth import *
-
-AUTH0_DOMAIN = "forsguiden.eu.auth0.com"
-
-
-oauth2_scheme = OAuth2AuthorizationCodeBearer(
-    authorizationUrl="https://forsguiden.eu.auth0.com/authorize",
-    tokenUrl="https://forsguiden.eu.auth0.com/oauth/token",
-    scopes={
-        "korv": "Korv",
-    },
-)
-
-jwks = get_jwks(AUTH0_DOMAIN)
-autentiserad_anvandare = auth0_token_authenticator_builder(
-    api_audience="https://forsguiden.se/api",
-    auth0_domain=AUTH0_DOMAIN,
-    algorithms=["RS256"],
-    jwks=get_jwks(AUTH0_DOMAIN),
-    oauth2_scheme=oauth2_scheme,
-)
-
-
-def har_roll(roll: str) -> Any:
-    return scope_verifier_builder(oauth2_scheme=oauth2_scheme, required_scope=roll)
-
-
-@app.get(
-    "/hemlig", dependencies=[Depends(autentiserad_anvandare), Depends(har_roll("korv"))]
-)
-async def hemlig():
-    return {"meddelande": "Superhemligt..."}
+app.include_router(ovrigt_router)
 
 
 @app.exception_handler(AuthError)
