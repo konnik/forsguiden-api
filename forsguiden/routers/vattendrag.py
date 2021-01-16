@@ -14,12 +14,12 @@ router = fastapi.APIRouter()
 
 
 @router.get("/vattendrag")
-async def lista_vattendrag(db: Db = Depends(on_inMemDb)) -> VattendragCollection:
+async def lista_vattendrag(db: Db = Depends(on_database)) -> VattendragCollection:
     return VattendragCollection(vattendrag=db.lista_vattendrag())
 
 
 @router.get("/vattendrag/{id}")
-async def hamta_vattendrag_med_id(id: int, db: Db = Depends(on_inMemDb)) -> Vattendrag:
+async def hamta_vattendrag_med_id(id: int, db: Db = Depends(on_database)) -> Vattendrag:
     vattendrag = db.hamta_vattendrag(id)
     if vattendrag is None:
         raise fastapi.HTTPException(status_code=404)

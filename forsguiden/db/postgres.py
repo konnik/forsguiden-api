@@ -3,7 +3,7 @@ import urllib.parse as urlparse
 
 from pydantic.main import BaseModel
 from forsguiden.db import Db
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Tuple
 
 from forsguiden.model import *
 
@@ -40,7 +40,7 @@ class PostgresDb(Db):
     def lista_lan(self) -> List[Lan]:
         with self.conn.cursor() as cursor:
             cursor.execute("select id, namn from lan;")
-            return [Lan(id=id, namn=namn) for (id, namn) in cursor]
+            return [_mappa_lan(x) for x in cursor]
 
     def hamta_lan(self, id: int) -> Optional[Lan]:
         with self.conn.cursor() as cursor:
@@ -48,8 +48,7 @@ class PostgresDb(Db):
             if cursor.rowcount == 0:
                 return None
             else:
-                (id, namn) = cursor.fetchone()
-                return Lan(id=id, namn=namn)
+                return _mappa_lan(cursor.fetchone())
 
     def spara_lan(self, nytt_lan: Lan) -> Lan:
         with self.conn:
@@ -69,3 +68,51 @@ class PostgresDb(Db):
                 antal_raderade = cur.rowcount
 
         return antal_raderade > 0
+
+    # vattendrag
+    def _lan_for_vattendrag(self, id: int) -> List[Lan]:
+        with self.conn.cursor() as cursor:
+            cursor.execute(
+                "select id, namn from lan "
+                "where id in (select lan_id from vattendrag_lan where vattendrag_id=%s);",
+                (id,),
+            )
+            return [_mappa_lan(x) for x in cursor]
+
+    def lista_vattendrag(self) -> List[Vattendrag]:
+        with self.conn.cursor() as cursor:
+            cursor.execute("select id, namn, beskrivning from vattendrag;")
+            return [
+                _mappa_vattendrag((id, namn, beskrivning), self._lan_for_vattendrag(id))
+                for (id, namn, beskrivning) in cursor
+            ]
+
+    def hamta_vattendrag(self, id: int) -> Optional[Vattendrag]:
+        with self.conn.cursor() as cursor:
+            cursor.execute(
+                "select id, namn, beskrivning from vattendrag where id=%s;", (id,)
+            )
+            if cursor.rowcount == 0:
+                return None
+            else:
+                x = cursor.fetchone()
+                (id, _, _) = x
+                return _mappa_vattendrag(x, self._lan_for_vattendrag(id))
+
+
+# mappers
+
+
+def _mappa_lan(data: Tuple[int, str]) -> Lan:
+    (id, namn) = data
+    return Lan(id=id, namn=namn)
+
+
+def _mappa_vattendrag(data: Tuple[int, str, str], lan: List[Lan]) -> Vattendrag:
+    (id, namn, beskrivning) = data
+    return Vattendrag(
+        id=id,
+        namn=namn,
+        beskrivning=beskrivning,
+        lan=lan,
+    )
