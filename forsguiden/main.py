@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.responses import JSONResponse
-from typing import List, Optional
+from typing import List, Optional, Any
 from pydantic import BaseModel
 import psycopg2.pool
 
@@ -10,7 +10,6 @@ from forsguiden.db import Db
 from forsguiden.db.postgres import PostgresDb, DbInfo
 from forsguiden.db.inmemory import InMemoryDb
 
-from forsguiden.dependencies import on_database
 from forsguiden.routers.lan import router as lan_router
 from forsguiden.routers.vattendrag import router as vattendrag_router
 from forsguiden.routers.forsstracka import router as forsstracka_router
@@ -30,10 +29,19 @@ app.include_router(vattendrag_router)
 app.include_router(forsstracka_router)
 
 
-# test av
+# test att integrera med auth0
 from forsguiden.auth import *
 
 AUTH0_DOMAIN = "forsguiden.eu.auth0.com"
+
+
+oauth2_scheme = OAuth2AuthorizationCodeBearer(
+    authorizationUrl="https://forsguiden.eu.auth0.com/authorize",
+    tokenUrl="https://forsguiden.eu.auth0.com/oauth/token",
+    scopes={
+        "korv": "Korv",
+    },
+)
 
 jwks = get_jwks(AUTH0_DOMAIN)
 autentiserad_anvandare = auth0_token_authenticator_builder(
@@ -41,21 +49,24 @@ autentiserad_anvandare = auth0_token_authenticator_builder(
     auth0_domain=AUTH0_DOMAIN,
     algorithms=["RS256"],
     jwks=get_jwks(AUTH0_DOMAIN),
-    oauth2_scheme=OAuth2AuthorizationCodeBearer(
-        authorizationUrl="https://forsguiden.eu.auth0.com/authorize",
-        tokenUrl="https://forsguiden.eu.auth0.com/oauth/token",
-    ),
+    oauth2_scheme=oauth2_scheme,
 )
+
+
+def har_roll(roll: str) -> Any:
+    return scope_verifier_builder(oauth2_scheme=oauth2_scheme, required_scope=roll)
+
+
+@app.get(
+    "/hemlig", dependencies=[Depends(autentiserad_anvandare), Depends(har_roll("korv"))]
+)
+async def hemlig():
+    return {"meddelande": "Superhemligt..."}
 
 
 @app.exception_handler(AuthError)
 def handle_auth_error(request: Request, ex: AuthError):
     return JSONResponse(status_code=ex.status_code, content=ex.error)
-
-
-@app.get("/hemlig", dependencies=[Depends(autentiserad_anvandare)])
-async def hemlig():
-    return {"meddelande": "Superhemligt..."}
 
 
 @app.on_event("startup")
