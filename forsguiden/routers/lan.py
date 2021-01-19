@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 import fastapi
-from fastapi import Depends
+from fastapi import Depends, Header
 
 from forsguiden.dependencies import on_database
 from forsguiden.model import *

@@ -7,7 +7,7 @@ create table vattendrag (
 create index vattendrag_namn_idx on vattendrag ( namn );
 
 create table vattendrag_lan (
-    vattendrag_id int unique references vattendrag(id),
+    vattendrag_id int not null references vattendrag(id),
     lan_id int not null references lan(id)
 );
 
@@ -19,3 +19,5 @@ insert into vattendrag_lan values (2,21);
 
 insert into vattendrag values (3, 'Vålån', 'Vålån är en fantastisk sträcka för de som gillar brutal utförspaddling. Sträckan är 7 km med en fallhöjd av 80 m. Grad 1 - 5. Den innehåller sex svåra passager.');
 insert into vattendrag_lan values (3,23);
+
+SELECT setval(pg_get_serial_sequence('vattendrag', 'id'), (SELECT MAX(id) FROM vattendrag)+1);

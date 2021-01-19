@@ -7,7 +7,7 @@ from forsguiden.dependencies import on_database, on_inMemDb
 from forsguiden.model import *
 from forsguiden.db import Db
 
-router = fastapi.APIRouter()
+router = fastapi.APIRouter(tags=["Vattendrag"])
 
 
 # Vattendrag
@@ -28,7 +28,7 @@ async def hamta_vattendrag_med_id(id: int, db: Db = Depends(on_database)) -> Vat
 
 @router.post("/vattendrag")
 async def skapa_nytt_vattendrag(
-    vattendrag: Vattendrag, db: Db = Depends(on_inMemDb)
+    vattendrag: Vattendrag, db: Db = Depends(on_database)
 ) -> Vattendrag:
     # ignorera eventuellt id i requestet
     vattendrag.id = -1
@@ -37,7 +37,7 @@ async def skapa_nytt_vattendrag(
 
 @router.put("/vattendrag/{id}")
 async def uppdatera_vattendrag(
-    id: int, vattendrag: Vattendrag, db: Db = Depends(on_inMemDb)
+    id: int, vattendrag: Vattendrag, db: Db = Depends(on_database)
 ) -> Vattendrag:
     x: Optional[Vattendrag] = db.hamta_vattendrag(id)
     if x is None:
@@ -51,3 +51,14 @@ async def uppdatera_vattendrag(
         )
 
     return db.spara_vattendrag(vattendrag)
+
+
+@router.delete("/vattendrag/{id}", status_code=204)
+async def radera_vattendrag(id: int, db: Db = Depends(on_database)):
+    x: Optional[Vattendrag] = db.hamta_vattendrag(id)
+    if x is None:
+        raise fastapi.HTTPException(
+            status_code=404, detail=f"Det finns inget vattendrag med id {id}."
+        )
+
+    db.radera_vattendrag(id)

@@ -69,8 +69,8 @@ class PostgresDb(Db):
         return nytt_lan
 
     def radera_lan(self, id) -> bool:
-        with self.conn:
-            with self.conn.cursor() as cur:
+        with self.conn as c:
+            with c.cursor() as cur:
                 cur.execute("delete from lan where id=%s;", (id,))
                 antal_raderade = cur.rowcount
 
@@ -105,6 +105,58 @@ class PostgresDb(Db):
                 x = cursor.fetchone()
                 (id, _, _) = x
                 return _mappa_vattendrag(x, self._lan_for_vattendrag(id))
+
+    def spara_vattendrag(self, nytt_vattendrag: Vattendrag) -> Vattendrag:
+        with self.conn as c:  # det här hoppas jag skapar en ny transaktion :)
+            with c.cursor() as cursor:
+                cursor.execute(
+                    "delete from vattendrag_lan where vattendrag_id=%s",
+                    (nytt_vattendrag.id,),
+                )
+                cursor.execute(
+                    "delete from vattendrag where id=%s",
+                    (nytt_vattendrag.id,),
+                )
+                if nytt_vattendrag.id == -1:
+                    cursor.execute(
+                        "insert into vattendrag (namn, beskrivning) values (%s, %s) returning id",
+                        (nytt_vattendrag.namn, nytt_vattendrag.beskrivning),
+                    )
+                    nytt_vattendrag.id = cursor.fetchone()[0]
+                else:
+                    cursor.execute(
+                        "insert into vattendrag (id, namn, beskrivning) values (%s,%s, %s) returning id",
+                        (
+                            nytt_vattendrag.id,
+                            nytt_vattendrag.namn,
+                            nytt_vattendrag.beskrivning,
+                        ),
+                    )
+
+                # spara mappning till län
+                for lan in nytt_vattendrag.lan:
+                    cursor.execute(
+                        "insert into vattendrag_lan (vattendrag_id, lan_id) values (%s, %s)",
+                        (nytt_vattendrag.id, lan.id),
+                    )
+
+        return self.hamta_vattendrag(nytt_vattendrag.id)
+
+    def radera_vattendrag(self, id: int) -> bool:
+        print("RADERA", id)
+        with self.conn as c:
+            with c.cursor() as cursor:
+                cursor.execute(
+                    "delete from vattendrag_lan where vattendrag_id=%s",
+                    (id,),
+                )
+                cursor.execute(
+                    "delete from vattendrag where id=%s",
+                    (id,),
+                )
+                antal_raderade = cursor.rowcount
+
+        return antal_raderade > 0
 
 
 # mappers
