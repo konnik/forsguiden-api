@@ -77,6 +77,7 @@ class PostgresDb(Db):
         return antal_raderade > 0
 
     # vattendrag
+
     def _lan_for_vattendrag(self, id: int) -> List[Lan]:
         with self.conn.cursor() as cursor:
             cursor.execute(
@@ -156,6 +157,11 @@ class PostgresDb(Db):
                 antal_raderade = cursor.rowcount
 
         return antal_raderade > 0
+
+    # forsstracka
+    def lista_forsstracka(self) -> List[Forsstracka]:
+
+        return super().lista_forsstracka()
 
 
 # mappers
