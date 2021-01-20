@@ -1,5 +1,6 @@
 import psycopg2
 import urllib.parse as urlparse
+import re
 
 from pydantic.main import BaseModel
 from forsguiden.db import Db
@@ -160,11 +161,68 @@ class PostgresDb(Db):
 
     # forsstracka
     def lista_forsstracka(self) -> List[Forsstracka]:
+        with self.conn.cursor() as c:
+            c.execute(
+                "select id, namn, langd, fallhojd, gradering_klass, gradering_lyft, koord_lat, koord_long, flode_smhipunkt, flode_minimum, flode_optimal, flode_maximum from forsstracka"
+            )
+            return [_mappa_forsstracka(x) for x in c]
 
-        return super().lista_forsstracka()
+    def hamta_forsstracka(self, id: int) -> Optional[Forsstracka]:
+        with self.conn.cursor() as cursor:
+            cursor.execute(
+                "select id, namn, langd, fallhojd, gradering_klass, gradering_lyft, koord_lat, koord_long, flode_smhipunkt, flode_minimum, flode_optimal, flode_maximum from forsstracka where id=%s",
+                (id,),
+            )
+            if cursor.rowcount == 0:
+                return None
+            else:
+                x = cursor.fetchone()
+                return _mappa_forsstracka(x)
 
 
 # mappers
+
+
+def _mappa_forsstracka(
+    data: Tuple[int, str, int, int, Grad, List[Grad], float, float, int, int, int, int]
+) -> Forsstracka:
+    (
+        id,
+        namn,
+        langd,
+        fallhojd,
+        gradering_klass,
+        gradering_lyft,
+        koord_lat,
+        koord_long,
+        flode_smhipunkt,
+        flode_minimum,
+        flode_optimal,
+        flode_maximum,
+    ) = data
+
+    def array_of_enum(value):
+        inner = re.match(r"^{(.*)}$", value).group(1)
+        return inner.split(",") if inner else []
+
+    return Forsstracka(
+        id=id,
+        namn=namn,
+        langd=langd,
+        fallhojd=fallhojd,
+        gradering=Gradering(
+            klass=Grad(gradering_klass), lyft=array_of_enum(gradering_lyft)
+        ),
+        koordinater=Position(lat=koord_lat, long=koord_long),
+        flode=Flode(
+            smhipunkt=flode_smhipunkt,
+            minimum=flode_minimum,
+            maximum=flode_maximum,
+            optimal=flode_optimal,
+        ),
+        vattendrag=[],  # todo
+        lan=[],  # todo
+    )
 
 
 def _mappa_lan(data: Tuple[int, str]) -> Lan:

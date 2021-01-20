@@ -16,13 +16,13 @@ _redigera = dependencies = [Security(behorighet("redigera:forsstracka"))]
 
 
 @router.get("/forsstracka")
-async def lista_forsstrackor(db: Db = Depends(on_inMemDb)) -> ForsstrackaCollection:
+async def lista_forsstrackor(db: Db = Depends(on_database)) -> ForsstrackaCollection:
     return ForsstrackaCollection(forsstracka=db.lista_forsstracka())
 
 
 @router.get("/forsstracka/{id}")
 async def hamta_forsstracka_med_id(
-    id: int, db: Db = Depends(on_inMemDb)
+    id: int, db: Db = Depends(on_database)
 ) -> Forsstracka:
     forsstracka = db.hamta_forsstracka(id)
     if forsstracka is None:

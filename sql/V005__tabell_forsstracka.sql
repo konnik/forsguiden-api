@@ -39,7 +39,7 @@ insert into forsstracka values (3, 'Vavaren', 350, 12, '3+', '{}', 60.69801, 17.
 insert into forsstracka_vattendrag values (1,1);
 insert into forsstracka_lan values (1,21);
 
-insert into forsstracka values (4, 'Konserthuset', 1000, 5, '2', '{}', 60.67298, 17.13364, 11802, 30, 60, 100);
+insert into forsstracka values (4, 'Konserthuset', 1000, 5, '2', '{"5","4+"}', 60.67298, 17.13364, 11802, 30, 60, 100);
 insert into forsstracka_vattendrag values (1,2);
 insert into forsstracka_lan values (1,21);
 
