@@ -1,16 +1,18 @@
 from typing import Optional, List
 
 import fastapi
-from fastapi import Depends
+from fastapi import Depends, Security
 
 from forsguiden.dependencies import on_database, on_inMemDb
 from forsguiden.model import *
 from forsguiden.db import Db
+from forsguiden.security import behorighet
 
 router = fastapi.APIRouter(tags=["Vattendrag"])
 
 
 # Vattendrag
+_redigera = dependencies = [Security(behorighet("redigera:vattendrag"))]
 
 
 @router.get("/vattendrag")
@@ -26,7 +28,7 @@ async def hamta_vattendrag_med_id(id: int, db: Db = Depends(on_database)) -> Vat
     return vattendrag
 
 
-@router.post("/vattendrag")
+@router.post("/vattendrag", dependencies=_redigera)
 async def skapa_nytt_vattendrag(
     vattendrag: Vattendrag, db: Db = Depends(on_database)
 ) -> Vattendrag:
@@ -35,7 +37,7 @@ async def skapa_nytt_vattendrag(
     return db.spara_vattendrag(vattendrag)
 
 
-@router.put("/vattendrag/{id}")
+@router.put("/vattendrag/{id}", dependencies=_redigera)
 async def uppdatera_vattendrag(
     id: int, vattendrag: Vattendrag, db: Db = Depends(on_database)
 ) -> Vattendrag:
@@ -53,7 +55,11 @@ async def uppdatera_vattendrag(
     return db.spara_vattendrag(vattendrag)
 
 
-@router.delete("/vattendrag/{id}", status_code=204)
+@router.delete(
+    "/vattendrag/{id}",
+    status_code=204,
+    dependencies=_redigera,
+)
 async def radera_vattendrag(id: int, db: Db = Depends(on_database)):
     x: Optional[Vattendrag] = db.hamta_vattendrag(id)
     if x is None:

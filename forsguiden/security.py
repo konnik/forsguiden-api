@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional, List, Sequence
 from forsguiden.auth import *
 
 
@@ -9,7 +9,10 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
     authorizationUrl="https://forsguiden.eu.auth0.com/authorize",
     tokenUrl="https://forsguiden.eu.auth0.com/oauth/token",
     scopes={
-        "korv": "Korv",
+        "lasa:hemlighet": "Läsa hemligheter.",
+        "redigera:lan": "Skapa och redigera län.",
+        "redigera:vattendrag": "Skapa och redigera vattendrag.",
+        "redigera:forsstracka": "Skapa och redigera forssträckor.",
     },
 )
 
@@ -24,5 +27,5 @@ def inloggad() -> Any:
     )
 
 
-def roll(roll: str) -> Any:
-    return scope_verifier_builder(oauth2_scheme=oauth2_scheme, required_scope=roll)
+def behorighet(scope: str) -> Any:
+    return scope_verifier_builder(oauth2_scheme=oauth2_scheme, required_scope=scope)

@@ -1,13 +1,14 @@
 from typing import Optional, List
-
+from urllib.request import urlopen
 import fastapi
 from fastapi import Depends
+from six.moves import urllib
 
 from forsguiden.dependencies import on_database
 from forsguiden.model import *
 from forsguiden.db import Db
 from forsguiden.db.postgres import DbInfo, PostgresDb
-from forsguiden.security import roll, inloggad
+from forsguiden.security import behorighet, inloggad
 
 router = fastapi.APIRouter(tags=["Övrigt"])
 
@@ -23,9 +24,17 @@ async def root():
     }
 
 
-@router.get("/hemlig", dependencies=[Depends(inloggad()), Depends(roll("korv"))])
+@router.get("/hemlig", dependencies=[Depends(behorighet("lasa:hemlighet"))])
 async def hemlig():
     return {"meddelande": "Superhemligt..."}
+
+
+@router.get(
+    "/hemlig2",
+    dependencies=[Depends(behorighet("lasa:hemlighet"))],
+)
+async def hemlig2(token=Depends(inloggad())):
+    return {"meddelande": "Superhemligt meddelande till: {}".format(str(token))}
 
 
 @router.get("/db")

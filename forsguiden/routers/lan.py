@@ -2,13 +2,16 @@ from typing import Optional, List
 
 import fastapi
 from fastapi import Depends, Header
+from fastapi.param_functions import Security
 
 from forsguiden.dependencies import on_database
 from forsguiden.model import *
 from forsguiden.db import Db
+from forsguiden.security import behorighet
 
 router = fastapi.APIRouter(tags=["Län"])
 
+_redigera = dependencies=[Security(behorighet("redigera:lan"))]
 
 @router.get("/lan")
 async def lista_alla_lan(db: Db = Depends(on_database)) -> LanCollection:
@@ -23,7 +26,7 @@ async def hamta_lan_med_id(id: int, db: Db = Depends(on_database)) -> Lan:
     return lan
 
 
-@router.post("/lan")
+@router.post("/lan", dependencies=_redigera)
 async def skapa_nytt_lan(lan: Lan, db: Db = Depends(on_database)) -> Lan:
     x: Optional[Lan] = db.hamta_lan(lan.id)
     if x is not None:
@@ -33,7 +36,7 @@ async def skapa_nytt_lan(lan: Lan, db: Db = Depends(on_database)) -> Lan:
     return db.spara_lan(lan)
 
 
-@router.put("/lan/{id}")
+@router.put("/lan/{id}", dependencies=_redigera)
 async def uppdatera_lan(id: int, lan: Lan, db: Db = Depends(on_database)) -> Lan:
     x: Optional[Lan] = db.hamta_lan(id)
     if x is None:
@@ -49,7 +52,7 @@ async def uppdatera_lan(id: int, lan: Lan, db: Db = Depends(on_database)) -> Lan
     return db.spara_lan(lan)
 
 
-@router.delete("/lan/{id}", status_code=204)
+@router.delete("/lan/{id}", status_code=204, dependencies=_redigera)
 async def radera_lan(id: int, db: Db = Depends(on_database)):
     x: Optional[Lan] = db.hamta_lan(id)
     if x is None:

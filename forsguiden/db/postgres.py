@@ -143,7 +143,6 @@ class PostgresDb(Db):
         return self.hamta_vattendrag(nytt_vattendrag.id)
 
     def radera_vattendrag(self, id: int) -> bool:
-        print("RADERA", id)
         with self.conn as c:
             with c.cursor() as cursor:
                 cursor.execute(

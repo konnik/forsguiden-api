@@ -15,7 +15,7 @@ from forsguiden.routers.vattendrag import router as vattendrag_router
 from forsguiden.routers.forsstracka import router as forsstracka_router
 from forsguiden.routers.ovrigt import router as ovrigt_router
 from forsguiden.auth import AuthError
-from forsguiden.security import inloggad, roll
+from forsguiden.security import inloggad, behorighet
 
 import dotenv
 

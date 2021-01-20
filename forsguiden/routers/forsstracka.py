@@ -1,15 +1,18 @@
 from typing import Optional, List
 
 import fastapi
-from fastapi import Depends
+from fastapi import Depends, Security
 
 from forsguiden.dependencies import on_database, on_inMemDb
 from forsguiden.model import *
 from forsguiden.db import Db
+from forsguiden.security import behorighet
 
 router = fastapi.APIRouter(tags=["Forssträcka"])
 
 # Forssträcka
+
+_redigera = dependencies = [Security(behorighet("redigera:forsstracka"))]
 
 
 @router.get("/forsstracka")
@@ -27,7 +30,7 @@ async def hamta_forsstracka_med_id(
     return forsstracka
 
 
-@router.post("/forsstracka")
+@router.post("/forsstracka", dependencies=_redigera)
 async def skapa_ny_forsstracka(
     forsstracka: Forsstracka, db: Db = Depends(on_inMemDb)
 ) -> Forsstracka:
@@ -36,7 +39,10 @@ async def skapa_ny_forsstracka(
     return db.spara_forsstracka(forsstracka)
 
 
-@router.put("/forsstracka/{id}")
+@router.put(
+    "/forsstracka/{id}",
+    dependencies=_redigera,
+)
 async def uppdatera_forsstracka(
     id: int, forsstracka: Forsstracka, db: Db = Depends(on_inMemDb)
 ) -> Forsstracka:
@@ -52,3 +58,18 @@ async def uppdatera_forsstracka(
         )
 
     return db.spara_forsstracka(forsstracka)
+
+
+@router.delete(
+    "/forsstracka/{id}",
+    status_code=204,
+    dependencies=_redigera,
+)
+async def radera_forsstracka(id: int, db: Db = Depends(on_database)):
+    x: Optional[Forsstracka] = db.hamta_forsstracka(id)
+    if x is None:
+        raise fastapi.HTTPException(
+            status_code=404, detail=f"Det finns ingen forssträcka med id {id}."
+        )
+
+    db.radera_forsstracka(id)

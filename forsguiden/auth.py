@@ -1,7 +1,7 @@
 import json
 from urllib.request import urlopen
 from jose import jwt
-from typing import Dict
+from typing import Dict, Optional, Sequence
 from fastapi import Security
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from typing import List
@@ -58,6 +58,7 @@ def auth0_token_authenticator_builder(
                 audience=api_audience,
                 issuer=f"https://{auth0_domain}/",
             )
+            return payload
         except jwt.ExpiredSignatureError:
             raise AuthError(
                 {"code": "token_expired", "description": "token is expired"}, 401
@@ -79,15 +80,13 @@ def auth0_token_authenticator_builder(
                 401,
             )
 
-        return payload
-
     return auth0_token_authentication
 
 
 def scope_verifier_builder(
     oauth2_scheme: OAuth2AuthorizationCodeBearer, required_scope
 ):
-    def scope_verifier(token: str = Security(oauth2_scheme)):
+    def scope_verifier(token: str = Security(oauth2_scheme, scopes=[required_scope])):
         unverified_claims = jwt.get_unverified_claims(token)
         if unverified_claims.get("scope"):
             token_scopes = unverified_claims["scope"].split()
