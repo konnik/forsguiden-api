@@ -34,9 +34,16 @@ async def hamta_forsstracka_med_id(
 async def skapa_ny_forsstracka(
     forsstracka: Forsstracka, db: Db = Depends(on_database)
 ) -> Forsstracka:
-    # ignorera eventuellt id i requestet
-    forsstracka.id = -1
-    return db.spara_forsstracka(forsstracka)
+    if forsstracka.id is None:
+        return db.spara_forsstracka(forsstracka)
+    else:
+        x: Optional[Forsstracka] = db.hamta_forsstracka(forsstracka.id)
+        if x is not None:
+            raise fastapi.HTTPException(
+                status_code=409,
+                detail=f"Det finns redan en forsstracka med id {forsstracka.id}.",
+            )
+        return db.spara_forsstracka(forsstracka)
 
 
 @router.put(

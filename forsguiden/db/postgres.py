@@ -218,7 +218,7 @@ class PostgresDb(Db):
                 values["flode_minimum"] = fors.flode.minimum
                 values["flode_maximum"] = fors.flode.maximum
                 values["flode_optimal"] = fors.flode.optimal
-                if fors.id == -1:
+                if fors.id is None:
                     c.execute(
                         "insert into forsstracka (namn, langd, fallhojd, gradering_klass, gradering_lyft, koord_lat, koord_long, flode_smhipunkt, flode_minimum, flode_optimal, flode_maximum )"
                         " values (%(namn)s, %(langd)s, %(fallhojd)s, %(gradering_klass)s, %(gradering_lyft)s::klass[], %(koord_lat)s, %(koord_long)s, %(flode_smhipunkt)s, %(flode_minimum)s, %(flode_optimal)s, %(flode_maximum)s)"

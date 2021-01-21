@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from enum import Enum
 from pydantic import BaseModel
 
@@ -66,7 +66,7 @@ class ForsstrackaLan(BaseModel):
 
 
 class Forsstracka(BaseModel):
-    id: int
+    id: Optional[int]
     namn: str
     gradering: Gradering
     langd: int
