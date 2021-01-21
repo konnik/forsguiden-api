@@ -19,12 +19,14 @@ create index forsstracka_namn_idx on forsstracka ( namn );
 
 create table forsstracka_lan (
     forsstracka_id int not null references forsstracka(id),
-    lan_id int not null references lan(id)
+    lan_id int not null references lan(id),
+    constraint forsstracka_lan_unique unique (forsstracka_id, lan_id)
 );
 
 create table forsstracka_vattendrag (
     forsstracka_id int not null references forsstracka(id),
-    vattendrag_id int not null references vattendrag(id)
+    vattendrag_id int not null references vattendrag(id),
+    constraint forsstracka_vattendrag_unique unique (forsstracka_id, vattendrag_id)
 );
 
 insert into forsstracka values (1, 'Brännsågen-Åbyggeby', 6000, 28, '2', '{}', 60.75627, 17.03825, 12020, 20, 30, 100);

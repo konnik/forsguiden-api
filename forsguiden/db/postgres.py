@@ -197,8 +197,60 @@ class PostgresDb(Db):
                 x = cursor.fetchone()
                 return _mappa_forsstracka(x, lan, vattendrag)
 
+    def spara_forsstracka(self, fors: Forsstracka) -> Forsstracka:
+        with self.conn as conn:
+            with conn.cursor() as c:
+                c.execute(
+                    "delete from forsstracka_lan where forsstracka_id=%s", (fors.id,)
+                )
+                c.execute(
+                    "delete from forsstracka_vattendrag where forsstracka_id=%s",
+                    (fors.id,),
+                )
+                c.execute("delete from forsstracka where id=%s", (fors.id,))
 
-# fetchers
+                values = fors.dict()
+                values["gradering_klass"] = fors.gradering.klass
+                values["gradering_lyft"] = fors.gradering.lyft
+                values["koord_lat"] = fors.koordinater.lat
+                values["koord_long"] = fors.koordinater.long
+                values["flode_smhipunkt"] = fors.flode.smhipunkt
+                values["flode_minimum"] = fors.flode.minimum
+                values["flode_maximum"] = fors.flode.maximum
+                values["flode_optimal"] = fors.flode.optimal
+                if fors.id == -1:
+                    c.execute(
+                        "insert into forsstracka (namn, langd, fallhojd, gradering_klass, gradering_lyft, koord_lat, koord_long, flode_smhipunkt, flode_minimum, flode_optimal, flode_maximum )"
+                        " values (%(namn)s, %(langd)s, %(fallhojd)s, %(gradering_klass)s, %(gradering_lyft)s::klass[], %(koord_lat)s, %(koord_long)s, %(flode_smhipunkt)s, %(flode_minimum)s, %(flode_optimal)s, %(flode_maximum)s)"
+                        " returning id",
+                        values,
+                    )
+                    fors.id = c.fetchone()[0]
+
+                else:
+                    c.execute(
+                        "insert into forsstracka (id, namn, langd, fallhojd, gradering_klass, gradering_lyft, koord_lat, koord_long, flode_smhipunkt, flode_minimum, flode_optimal, flode_maximum )"
+                        " values (%(id)s, %(namn)s, %(langd)s, %(fallhojd)s, %(gradering_klass)s, %(gradering_lyft)s::klass[], %(koord_lat)s, %(koord_long)s, %(flode_smhipunkt)s, %(flode_minimum)s, %(flode_optimal)s, %(flode_maximum)s)"
+                        "returning id",
+                        values,
+                    )
+
+                for lan in fors.lan:
+                    c.execute(
+                        "insert into forsstracka_lan (forsstracka_id, lan_id) values (%s, %s)",
+                        (fors.id, lan.id),
+                    )
+
+                for vattendrag in fors.vattendrag:
+                    c.execute(
+                        "insert into forsstracka_vattendrag (forsstracka_id, vattendrag_id) values (%s, %s)",
+                        (fors.id, vattendrag.id),
+                    )
+
+        return self.hamta_forsstracka(fors.id)
+
+
+# fetchers (haha, vafan är det för nåt? :)
 
 
 def _fetch_forstracka_lan(id, cursor) -> List[ForsstrackaLan]:
