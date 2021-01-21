@@ -249,6 +249,25 @@ class PostgresDb(Db):
 
         return self.hamta_forsstracka(fors.id)
 
+    def radera_forsstracka(self, id: int) -> bool:
+        with self.conn as c:
+            with c.cursor() as cursor:
+                cursor.execute(
+                    "delete from forsstracka_lan where forsstracka_id=%s",
+                    (id,),
+                )
+                cursor.execute(
+                    "delete from forsstracka_vattendrag where forsstracka_id=%s",
+                    (id,),
+                )
+                cursor.execute(
+                    "delete from forsstracka where id=%s",
+                    (id,),
+                )
+                antal_raderade = cursor.rowcount
+
+        return antal_raderade > 0
+
 
 # fetchers (haha, vafan är det för nåt? :)
 
