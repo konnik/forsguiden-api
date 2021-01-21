@@ -32,16 +32,16 @@ insert into forsstracka_vattendrag values (1,1);
 insert into forsstracka_lan values (1,21);
 
 insert into forsstracka values (2, 'Forsby', 250, 4, '2', '{}', 60.71786, 17.14122, 12020, 30, 50, 100);
-insert into forsstracka_vattendrag values (1,1);
-insert into forsstracka_lan values (1,21);
+insert into forsstracka_vattendrag values (2,1);
+insert into forsstracka_lan values (2,21);
 
 insert into forsstracka values (3, 'Vavaren', 350, 12, '3+', '{}', 60.69801, 17.15803, 12020, 20, 25, 40);
-insert into forsstracka_vattendrag values (1,1);
-insert into forsstracka_lan values (1,21);
+insert into forsstracka_vattendrag values (3,1);
+insert into forsstracka_lan values (3,21);
 
 insert into forsstracka values (4, 'Konserthuset', 1000, 5, '2', '{"5","4+"}', 60.67298, 17.13364, 11802, 30, 60, 100);
-insert into forsstracka_vattendrag values (1,2);
-insert into forsstracka_lan values (1,21);
+insert into forsstracka_vattendrag values (4,2);
+insert into forsstracka_lan values (4,21);
 
 
 select setval(pg_get_serial_sequence('forsstracka', 'id'), (select max(id) from forsstracka)+1);

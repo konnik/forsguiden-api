@@ -165,10 +165,25 @@ class PostgresDb(Db):
             c.execute(
                 "select id, namn, langd, fallhojd, gradering_klass, gradering_lyft, koord_lat, koord_long, flode_smhipunkt, flode_minimum, flode_optimal, flode_maximum from forsstracka"
             )
-            return [_mappa_forsstracka(x) for x in c]
+            return [_mappa_forsstracka(x, [], []) for x in c]
 
     def hamta_forsstracka(self, id: int) -> Optional[Forsstracka]:
         with self.conn.cursor() as cursor:
+            cursor.execute(
+                "select id, namn from lan where id in (select lan_id from forsstracka_lan where forsstracka_id=%s)",
+                (id,),
+            )
+            lan = [
+                ForsstrackaLan(id=lan_id, namn=lan_namn)
+                for (lan_id, lan_namn) in cursor
+            ]
+            cursor.execute(
+                "select id, namn from vattendrag where id in (select vattendrag_id from forsstracka_vattendrag where forsstracka_id=%s)",
+                (id,),
+            )
+            vattendrag = [
+                ForsstrackaVattendrag(id=id, namn=namn) for (id, namn) in cursor
+            ]
             cursor.execute(
                 "select id, namn, langd, fallhojd, gradering_klass, gradering_lyft, koord_lat, koord_long, flode_smhipunkt, flode_minimum, flode_optimal, flode_maximum from forsstracka where id=%s",
                 (id,),
@@ -177,14 +192,16 @@ class PostgresDb(Db):
                 return None
             else:
                 x = cursor.fetchone()
-                return _mappa_forsstracka(x)
+                return _mappa_forsstracka(x, lan, vattendrag)
 
 
 # mappers
 
 
 def _mappa_forsstracka(
-    data: Tuple[int, str, int, int, Grad, List[Grad], float, float, int, int, int, int]
+    data: Tuple[int, str, int, int, Grad, List[Grad], float, float, int, int, int, int],
+    lan: List[ForsstrackaLan],
+    vattendrag: List[ForsstrackaVattendrag],
 ) -> Forsstracka:
     (
         id,
@@ -220,8 +237,8 @@ def _mappa_forsstracka(
             maximum=flode_maximum,
             optimal=flode_optimal,
         ),
-        vattendrag=[],  # todo
-        lan=[],  # todo
+        vattendrag=vattendrag,
+        lan=lan,
     )
 
 
