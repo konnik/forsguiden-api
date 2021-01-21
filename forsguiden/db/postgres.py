@@ -165,25 +165,21 @@ class PostgresDb(Db):
             c.execute(
                 "select id, namn, langd, fallhojd, gradering_klass, gradering_lyft, koord_lat, koord_long, flode_smhipunkt, flode_minimum, flode_optimal, flode_maximum from forsstracka"
             )
-            return [_mappa_forsstracka(x, [], []) for x in c]
+            with self.conn.cursor() as c2:
+                return [
+                    _mappa_forsstracka(
+                        x,
+                        _fetch_forstracka_lan(x[0], c2),
+                        _fetch_forstracka_vattendrag(x[0], c2),
+                    )
+                    for x in c
+                ]
 
     def hamta_forsstracka(self, id: int) -> Optional[Forsstracka]:
         with self.conn.cursor() as cursor:
-            cursor.execute(
-                "select id, namn from lan where id in (select lan_id from forsstracka_lan where forsstracka_id=%s)",
-                (id,),
-            )
-            lan = [
-                ForsstrackaLan(id=lan_id, namn=lan_namn)
-                for (lan_id, lan_namn) in cursor
-            ]
-            cursor.execute(
-                "select id, namn from vattendrag where id in (select vattendrag_id from forsstracka_vattendrag where forsstracka_id=%s)",
-                (id,),
-            )
-            vattendrag = [
-                ForsstrackaVattendrag(id=id, namn=namn) for (id, namn) in cursor
-            ]
+            lan = _fetch_forstracka_lan(id, cursor)
+            vattendrag = _fetch_forstracka_vattendrag(id, cursor)
+
             cursor.execute(
                 "select id, namn, langd, fallhojd, gradering_klass, gradering_lyft, koord_lat, koord_long, flode_smhipunkt, flode_minimum, flode_optimal, flode_maximum from forsstracka where id=%s",
                 (id,),
@@ -193,6 +189,25 @@ class PostgresDb(Db):
             else:
                 x = cursor.fetchone()
                 return _mappa_forsstracka(x, lan, vattendrag)
+
+
+# fetchers
+
+
+def _fetch_forstracka_lan(id, cursor) -> List[ForsstrackaLan]:
+    cursor.execute(
+        "select id, namn from lan where id in (select lan_id from forsstracka_lan where forsstracka_id=%s)",
+        (id,),
+    )
+    return [ForsstrackaLan(id=lan_id, namn=lan_namn) for (lan_id, lan_namn) in cursor]
+
+
+def _fetch_forstracka_vattendrag(id, cursor) -> List[ForsstrackaVattendrag]:
+    cursor.execute(
+        "select id, namn from vattendrag where id in (select vattendrag_id from forsstracka_vattendrag where forsstracka_id=%s)",
+        (id,),
+    )
+    return [ForsstrackaVattendrag(id=id, namn=namn) for (id, namn) in cursor]
 
 
 # mappers
