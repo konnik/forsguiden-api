@@ -3,7 +3,7 @@ from typing import Optional, List
 import fastapi
 from fastapi import Depends, Security
 
-from forsguiden.dependencies import on_database, on_inMemDb
+from forsguiden.dependencies import on_database
 from forsguiden.model import *
 from forsguiden.db import Db
 from forsguiden.security import behorighet
@@ -32,7 +32,7 @@ async def hamta_forsstracka_med_id(
 
 @router.post("/forsstracka", dependencies=_redigera)
 async def skapa_ny_forsstracka(
-    forsstracka: Forsstracka, db: Db = Depends(on_inMemDb)
+    forsstracka: Forsstracka, db: Db = Depends(on_database)
 ) -> Forsstracka:
     # ignorera eventuellt id i requestet
     forsstracka.id = -1
@@ -44,7 +44,7 @@ async def skapa_ny_forsstracka(
     dependencies=_redigera,
 )
 async def uppdatera_forsstracka(
-    id: int, forsstracka: Forsstracka, db: Db = Depends(on_inMemDb)
+    id: int, forsstracka: Forsstracka, db: Db = Depends(on_database)
 ) -> Forsstracka:
     x: Optional[Forsstracka] = db.hamta_forsstracka(id)
     if x is None:

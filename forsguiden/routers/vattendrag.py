@@ -3,7 +3,7 @@ from typing import Optional, List
 import fastapi
 from fastapi import Depends, Security
 
-from forsguiden.dependencies import on_database, on_inMemDb
+from forsguiden.dependencies import on_database
 from forsguiden.model import *
 from forsguiden.db import Db
 from forsguiden.security import behorighet
