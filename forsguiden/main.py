@@ -1,6 +1,7 @@
 import os
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional, Any
 from pydantic import BaseModel
 import psycopg2.pool
@@ -31,6 +32,22 @@ app.include_router(lan_router)
 app.include_router(vattendrag_router)
 app.include_router(forsstracka_router)
 app.include_router(ovrigt_router)
+
+# cors
+
+origins = [
+    "http://localhost:8000",
+    "http://localhost:1234",
+    "https://forsguiden.konstenius.se",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.exception_handler(AuthError)
