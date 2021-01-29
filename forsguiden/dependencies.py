@@ -9,8 +9,9 @@ async def on_inMemDb(request: Request):
 
 
 async def on_database(request: Request):
+    engine = request.app.state.engine
     conn = request.app.state.pool.getconn()
     try:
-        yield PostgresDb(conn)
+        yield PostgresDb(conn, engine)
     finally:
         request.app.state.pool.putconn(conn)

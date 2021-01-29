@@ -1,11 +1,11 @@
 import psycopg2
 import urllib.parse as urlparse
 import re
-
 from pydantic.main import BaseModel
-from forsguiden.db import Db
 from typing import List, Optional, Any, Tuple
+from sqlalchemy.engine.base import Engine
 
+from forsguiden.db import Db
 from forsguiden.model import *
 
 
@@ -17,40 +17,77 @@ class DbStats(BaseModel):
 
 class DbInfo(BaseModel):
     up: bool
-    info: str
     stats: Optional[DbStats] = None
+
+
+from sqlalchemy import (
+    Table,
+    Column,
+    Integer,
+    String,
+    MetaData,
+    ForeignKey,
+    func,
+    select,
+    insert,
+    delete,
+    update,
+)
 
 
 class PostgresDb(Db):
     conn: Any
+    engine: Engine
+    metadata: MetaData
+    lan: Table
+    vattendrag: Table
+    forsstracka: Table
 
-    def __init__(self, connection):
+    def __init__(self, connection, engine: Engine):
         self.conn = connection
+        self.engine = engine
+
+        self.metadata = MetaData()
+        self.lan = Table(
+            "lan",
+            self.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("namn", String),
+        )
+
+        self.vattendrag = Table(
+            "vattendrag",
+            self.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("namn", String),
+            Column("beskrivning", String),
+        )
+
+        self.forsstracka = Table(
+            "forsstracka",
+            self.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("namn", String),
+        )
 
     def info(self) -> DbInfo:
-        try:
-            with self.conn:
-                with self.conn.cursor() as cursor:
-                    cursor.execute("select version();")
-                    (version,) = cursor.fetchone()
-                    cursor.execute("select count(*) from lan;")
-                    (antal_lan,) = cursor.fetchone()
-                    cursor.execute("select count(*) from vattendrag;")
-                    (antal_vattendrag,) = cursor.fetchone()
-                    cursor.execute("select count(*) from forsstracka;")
-                    (antal_forsstrackor,) = cursor.fetchone()
-                    return DbInfo(
-                        up=True,
-                        info=version,
-                        stats=DbStats(
-                            lan=antal_lan,
-                            vattendrag=antal_vattendrag,
-                            forsstrackor=antal_forsstrackor,
-                        ),
-                    )
+        with self.engine.connect() as conn:
+            count_lan = select([func.count()]).select_from(self.lan)
+            count_vattendrag = select([func.count()]).select_from(self.vattendrag)
+            count_forsstracka = select([func.count()]).select_from(self.forsstracka)
 
-        except psycopg2.Error as e:
-            return DbInfo(up=False, info=str(e))
+            (antal_lan,) = conn.execute(count_lan).fetchone()
+            (antal_vattendrag,) = conn.execute(count_vattendrag).fetchone()
+            (antal_forsstracka,) = conn.execute(count_forsstracka).fetchone()
+
+            return DbInfo(
+                up=True,
+                stats=DbStats(
+                    lan=antal_lan,
+                    vattendrag=antal_vattendrag,
+                    forsstrackor=antal_forsstracka,
+                ),
+            )
 
     def lista_lan(self) -> List[Lan]:
         with self.conn.cursor() as cursor:

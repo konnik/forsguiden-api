@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional, Any
 from pydantic import BaseModel
 import psycopg2.pool
+import sqlalchemy
 
 from forsguiden.model import *
 from forsguiden.db import Db
@@ -57,6 +58,9 @@ def handle_auth_error(request: Request, ex: AuthError):
 
 @app.on_event("startup")
 async def startup():
+    app.state.engine = sqlalchemy.create_engine(
+        os.environ["DATABASE_URL"].replace("postgres://", "postgresql+psycopg2://")
+    )
     app.state.pool = psycopg2.pool.ThreadedConnectionPool(
         1, 20, os.environ["DATABASE_URL"]
     )
