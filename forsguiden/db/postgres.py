@@ -32,6 +32,8 @@ from sqlalchemy import (
     insert,
     delete,
     update,
+    asc,
+    desc,
 )
 
 
@@ -71,7 +73,7 @@ class PostgresDb(Db):
         )
 
     def info(self) -> DbInfo:
-        with self.engine.connect() as conn:
+        with self.engine.begin() as conn:
             count_lan = select([func.count()]).select_from(self.lan)
             count_vattendrag = select([func.count()]).select_from(self.vattendrag)
             count_forsstracka = select([func.count()]).select_from(self.forsstracka)
@@ -90,17 +92,17 @@ class PostgresDb(Db):
             )
 
     def lista_lan(self) -> List[Lan]:
-        with self.conn.cursor() as cursor:
-            cursor.execute("select id, namn from lan;")
-            return [_mappa_lan(x) for x in cursor]
+        with self.engine.begin() as c:
+            result = c.execute(select(self.lan).order_by(asc(self.lan.c.id)))
+            return [_mappa_lan(x) for x in result]
 
     def hamta_lan(self, id: int) -> Optional[Lan]:
-        with self.conn.cursor() as cursor:
-            cursor.execute("select id, namn from lan where id=%s;", (id,))
-            if cursor.rowcount == 0:
+        with self.engine.begin() as c:
+            result = c.execute(select(self.lan).where(self.lan.c.id == id))
+            if result.rowcount == 0:
                 return None
             else:
-                return _mappa_lan(cursor.fetchone())
+                return _mappa_lan(result.fetchone())
 
     def spara_lan(self, nytt_lan: Lan) -> Lan:
         with self.conn:
