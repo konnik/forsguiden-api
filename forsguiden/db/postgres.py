@@ -157,28 +157,25 @@ class PostgresDb(Db):
     def spara_vattendrag(self, nytt_vattendrag: Vattendrag) -> Vattendrag:
         with self.conn as c:  # det här hoppas jag skapar en ny transaktion :)
             with c.cursor() as cursor:
-                cursor.execute(
-                    "delete from vattendrag_lan where vattendrag_id=%s",
-                    (nytt_vattendrag.id,),
-                )
-                cursor.execute(
-                    "delete from vattendrag where id=%s",
-                    (nytt_vattendrag.id,),
-                )
                 if nytt_vattendrag.id == -1:
+                    # nytt vattendrag
                     cursor.execute(
                         "insert into vattendrag (namn, beskrivning) values (%s, %s) returning id",
                         (nytt_vattendrag.namn, nytt_vattendrag.beskrivning),
                     )
                     nytt_vattendrag.id = cursor.fetchone()[0]
                 else:
+                    values = nytt_vattendrag.dict()
+
+                    # uppdatera vattendrag
                     cursor.execute(
-                        "insert into vattendrag (id, namn, beskrivning) values (%s,%s, %s) returning id",
-                        (
-                            nytt_vattendrag.id,
-                            nytt_vattendrag.namn,
-                            nytt_vattendrag.beskrivning,
-                        ),
+                        "delete from vattendrag_lan where vattendrag_id=%(id)s",
+                        values,
+                    )
+
+                    cursor.execute(
+                        "update vattendrag set namn=%(namn)s, beskrivning=%(beskrivning)s where id=%(id)s",
+                        values,
                     )
 
                 # spara mappning till län
