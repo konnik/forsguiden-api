@@ -19,7 +19,30 @@ engine: Engine = sqlalchemy.create_engine(
     os.environ["DATABASE_URL"].replace("postgres://", "postgresql+psycopg2://")
 )
 
+f = Forsstracka(
+    id=-1,
+    namn="Brännsågen-Åbyggeby",
+    langd=6000,
+    fallhojd=28,
+    gradering=Gradering(klass=Grad.tva, lyft=[Grad.tre_plus, Grad.fyra_minus]),
+    koordinater=Position(lat=60.75627, long=17.03825),
+    flode=Flode(smhipunkt=12020, minimum=20, maximum=100, optimal=30),
+    vattendrag=[ForsstrackaVattendrag(id=1, namn="Testeboån")],
+    lan=[ForsstrackaLan(id=21, namn="Gävleborg")],
+)
+
 db = PostgresDb(psconn, engine)
+
+v = db.hamta_vattendrag(1)
+if v is not None:
+    print(v.id, v.namn)
+    v.namn = v.namn + "!"
+    v = db.spara_vattendrag(v)
+    print(v.id, v.namn, v.beskrivning[:30], v.lan)
+else:
+    print("finns ej")
+
+exit(1)
 
 with engine.begin() as c:
     # c.execute("delete from lan where id=99")
