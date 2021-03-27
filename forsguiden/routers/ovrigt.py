@@ -10,7 +10,8 @@ from forsguiden.db import Db
 from forsguiden.db.postgres import DbInfo, PostgresDb
 from forsguiden.security import behorighet, inloggad
 
-from forsguiden.smhi import sok_smhipunkt
+from forsguiden.smhi import Smhipunkt, sok_smhipunkt
+from forsguiden.hojd import hamta_hojd, Hojd
 
 router = fastapi.APIRouter(tags=["Övrigt"])
 
@@ -26,8 +27,20 @@ async def root():
     }
 
 
+@router.get("/hojd/")
+async def hojd(east: float, north: float) -> Hojd:
+    p = hamta_hojd(east=east, north=north)
+    if p is None:
+        raise fastapi.HTTPException(
+            status_code=404,
+            detail=f"Hittade inget höjdvärde för koordinat east={east}, north={north}.",
+        )
+    else:
+        return p
+
+
 @router.get("/smhipunkt/")
-async def smhipunkt(x: float, y: float) -> str:
+async def smhipunkt(x: float, y: float) -> Smhipunkt:
     p = sok_smhipunkt(x, y)
     if p is None:
         raise fastapi.HTTPException(
