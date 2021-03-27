@@ -10,6 +10,8 @@ from forsguiden.db import Db
 from forsguiden.db.postgres import DbInfo, PostgresDb
 from forsguiden.security import behorighet, inloggad
 
+from forsguiden.smhi import sok_smhipunkt
+
 router = fastapi.APIRouter(tags=["Övrigt"])
 
 # Övrigt
@@ -22,6 +24,18 @@ async def root():
         "swagger": "/docs",
         "resurser": ["/lan", "/vattendrag", "/forsstracka", "/datadump"],
     }
+
+
+@router.get("/smhipunkt/")
+async def smhipunkt(x: float, y: float) -> str:
+    p = sok_smhipunkt(x, y)
+    if p is None:
+        raise fastapi.HTTPException(
+            status_code=404,
+            detail=f"Hittade ingen smhipunkt för koordinat x={x}, y={y}.",
+        )
+    else:
+        return p
 
 
 @router.get("/hemlig", dependencies=[Depends(behorighet("lasa:hemlighet"))])
