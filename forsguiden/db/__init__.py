@@ -41,3 +41,14 @@ class Db:
 
     def radera_forsstracka(self, id: int) -> bool:
         raise NotImplemented
+
+    # Forssträcka beskrivning
+    def hamta_forsstracka_beskrivning(
+        self, id: int
+    ) -> Optional[ForsstrackaBeskrivning]:
+        raise NotImplemented
+
+    def spara_forsstracka_beskrivning(
+        self, id: int, ny_beskrivning: ForsstrackaBeskrivning
+    ) -> ForsstrackaBeskrivning:
+        raise NotImplemented

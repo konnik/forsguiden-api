@@ -304,6 +304,41 @@ class PostgresDb(Db):
 
         return antal_raderade > 0
 
+    def hamta_forsstracka_beskrivning(
+        self, id: int
+    ) -> Optional[ForsstrackaBeskrivning]:
+        with self.conn.cursor() as cursor:
+            cursor.execute(
+                "select forsstracka_id, beskrivning, uppdaterad, uppdaterad_av from forsstracka_beskrivning where forsstracka_id=%s",
+                (id,),
+            )
+            if cursor.rowcount == 0:
+                return None
+            else:
+                x = cursor.fetchone()
+                return _mappa_forsstracka_beskrivning(x)
+
+    def spara_forsstracka_beskrivning(
+        self, id: int, ny_beskrivning: ForsstrackaBeskrivning
+    ) -> ForsstrackaBeskrivning:
+        with self.conn as conn:
+            with conn.cursor() as c:
+                c.execute(
+                    "delete from forsstracka_beskrivning where forsstracka_id=%s",
+                    (id,),
+                )
+
+                values = ny_beskrivning.dict()
+                values["id"] = id
+
+                c.execute(
+                    "insert into forsstracka_beskrivning (forsstracka_id, beskrivning, uppdaterad, uppdaterad_av)"
+                    " values (%(id)s, %(beskrivning)s, %(uppdaterad)s, %(uppdaterad_av)s)",
+                    values,
+                )
+
+        return ny_beskrivning
+
 
 # fetchers (haha, vafan är det för nåt? :)
 
@@ -368,6 +403,24 @@ def _mappa_forsstracka(
         ),
         vattendrag=vattendrag,
         lan=lan,
+    )
+
+
+def _mappa_forsstracka_beskrivning(
+    data: Tuple[int, str, datetime.datetime, str],
+) -> ForsstrackaBeskrivning:
+    (
+        forsstracka_id,
+        beskrivning,
+        uppdaterad,
+        uppdaterad_av,
+    ) = data
+
+    return ForsstrackaBeskrivning(
+        forsstracka_id=forsstracka_id,
+        beskrivning=beskrivning,
+        uppdaterad=uppdaterad,
+        uppdaterad_av=uppdaterad_av,
     )
 
 

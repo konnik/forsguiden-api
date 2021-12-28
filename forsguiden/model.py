@@ -1,6 +1,7 @@
 from typing import List, Optional
 from enum import Enum
 from pydantic import BaseModel
+import datetime
 
 
 class Lan(BaseModel):
@@ -79,6 +80,16 @@ class Forsstracka(BaseModel):
 
 class ForsstrackaCollection(BaseModel):
     forsstracka: List[Forsstracka]
+
+
+class NyForsstrackaBeskrivning(BaseModel):
+    beskrivning: str
+
+
+class ForsstrackaBeskrivning(BaseModel):
+    beskrivning: str
+    uppdaterad: datetime.datetime
+    uppdaterad_av: str
 
 
 class DataDump(BaseModel):

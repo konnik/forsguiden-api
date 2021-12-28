@@ -80,3 +80,37 @@ async def radera_forsstracka(id: int, db: Db = Depends(on_database)):
         )
 
     db.radera_forsstracka(id)
+
+
+# forssträcka beskrivning
+
+
+@router.get("/forsstracka/{id}/beskrivning")
+async def hamta_forsstracka_beskrivning(
+    id: int, db: Db = Depends(on_database)
+) -> Optional[ForsstrackaBeskrivning]:
+    forsstracka_beskr = db.hamta_forsstracka_beskrivning(id)
+    if forsstracka_beskr is None:
+        raise fastapi.HTTPException(status_code=404)
+    return forsstracka_beskr
+
+
+@router.put(
+    "/forsstracka/{id}/beskrivning",
+    dependencies=_redigera,
+)
+async def uppdatera_forsstracka_beskrivnin(
+    id: int, beskrivning: NyForsstrackaBeskrivning, db: Db = Depends(on_database)
+) -> ForsstrackaBeskrivning:
+    x: Optional[Forsstracka] = db.hamta_forsstracka(id)
+    if x is None:
+        raise fastapi.HTTPException(
+            status_code=404, detail=f"Det finns inget forsstracka med id {id}."
+        )
+
+    beskr: ForsstrackaBeskrivning = ForsstrackaBeskrivning(
+        beskrivning=beskrivning.beskrivning,
+        uppdaterad=datetime.datetime.now(tz=datetime.timezone.utc),
+        uppdaterad_av="???",
+    )
+    return db.spara_forsstracka_beskrivning(id, beskr)
