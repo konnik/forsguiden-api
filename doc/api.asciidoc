@@ -115,20 +115,4 @@ Län:: det eller de <<lan>> som sträckan passerar (är normalt endast ett län)
 
 == API
 
-=== Dumpa allt
-
-Hämtar all information om alla forsar och vattendrag i ett enda stort json-objekt.
-
-.Anrop
-[source,json]
-GET /data.json
-
-.Svar
-[source,json]
-{
-    "lan": [ ... ],
-    "vattendrag": [ ... ],
-    "forsstrackor": [ ... ]
-}
-
-link:data.json[Dumpa allt]
+Todo...
