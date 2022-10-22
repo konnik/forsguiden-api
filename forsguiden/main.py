@@ -59,7 +59,9 @@ def handle_auth_error(request: Request, ex: AuthError):
 @app.on_event("startup")
 async def startup():
     app.state.engine = sqlalchemy.create_engine(
-        os.environ["DATABASE_URL"].replace("postgres://", "postgresql+psycopg2://")
+        os.environ["DATABASE_URL"].replace("postgres://", "postgresql+psycopg2://"),
+        pool_pre_ping=True,
+        echo_pool=True,
     )
     app.state.pool = psycopg2.pool.ThreadedConnectionPool(
         1, 20, os.environ["DATABASE_URL"]
