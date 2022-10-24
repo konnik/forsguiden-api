@@ -15,6 +15,7 @@ typing-extensions = "*"
 dataclasses = "*"
 python-jose = {extras = ["cryptography"],version = "*"}
 sqlalchemy = "*"
+pip = "*"
 
 [dev-packages]
 pylint = "*"
