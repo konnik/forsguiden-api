@@ -1,16 +1,41 @@
-FROM python:3.9
+FROM python:3.9-slim AS base
 
-WORKDIR /code
+# Setup env
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONFAULTHANDLER 1
 
+
+
+
+FROM base AS python-deps
+
+# Install pipenv and compilation dependencies
 RUN python -m pip install --upgrade pip
+RUN pip install pipenv
+RUN apt-get update && apt-get install -y --no-install-recommends gcc
 
-COPY Pipfile Pipfile.lock ./
-RUN pip install pipenv && pipenv install --system --deploy
+# Install python dependencies in /.venv
+COPY Pipfile .
+COPY Pipfile.lock .
+RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
 
-COPY ./forsguiden /code/forsguiden
+
+
+
+FROM python-deps AS runtime
+
+# Copy virtual env from python-deps stage
+COPY --from=python-deps /.venv /.venv
+ENV PATH="/.venv/bin:$PATH"
+
+# Create and switch to a new user
+RUN useradd --create-home appuser
+WORKDIR /home/appuser
+USER appuser
+
+COPY ./forsguiden /home/appuser/forsguiden
 
 EXPOSE 8080
-
-CMD ["uvicorn", "forsguiden.main:app", "--host", "0.0.0.0", "--port", "8080"]
-# If running behind a proxy like Nginx or Traefik add --proxy-headers
-# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
+ENTRYPOINT ["uvicorn", "forsguiden.main:app", "--host", "0.0.0.0", "--port", "8080"]
