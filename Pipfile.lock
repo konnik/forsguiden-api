@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2f943ccb08fd449410da8ac04632363789f78595e5c0613514e5ff5186de2a88"
+            "sha256": "a062eb482d4080b54b242eb09b624bbc935862c4e80cf8a44376728c03bea473"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -155,6 +155,14 @@
             ],
             "index": "pypi",
             "version": "==0.85.1"
+        },
+        "graphql-core": {
+            "hashes": [
+                "sha256:06d2aad0ac723e35b1cb47885d3e5c45e956a53bc1b209a9fc5369007fe46676",
+                "sha256:5766780452bd5ec8ba133f8bf287dc92713e3868ddd83aee4faab9fc3e303dc3"
+            ],
+            "markers": "python_version >= '3.6' and python_version < '4'",
+            "version": "==3.2.3"
         },
         "greenlet": {
             "hashes": [
@@ -418,6 +426,14 @@
             "markers": "python_version >= '3.7'",
             "version": "==1.10.2"
         },
+        "python-dateutil": {
+            "hashes": [
+                "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86",
+                "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==2.8.2"
+        },
         "python-dotenv": {
             "hashes": [
                 "sha256:1684eb44636dd462b66c3ee016599815514527ad99965de77f43e0944634a7e5",
@@ -436,6 +452,12 @@
             ],
             "index": "pypi",
             "version": "==3.3.0"
+        },
+        "python-multipart": {
+            "hashes": [
+                "sha256:f7bb5f611fc600d15fa47b3974c8aa16e93724513b49b5f95c81e6624c83fa43"
+            ],
+            "version": "==0.0.5"
         },
         "rsa": {
             "hashes": [
@@ -505,6 +527,17 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==0.20.4"
+        },
+        "strawberry-graphql": {
+            "extras": [
+                "fastapi"
+            ],
+            "hashes": [
+                "sha256:4b36ef85654d70c22208d99577b287d805bbd9626d93906aa9021967c3d502a9",
+                "sha256:b6ba148a71752218dc2d19d686a45fb650676b9d90f1331802542ef9e5d79ae2"
+            ],
+            "index": "pypi",
+            "version": "==0.137.1"
         },
         "typing-extensions": {
             "hashes": [

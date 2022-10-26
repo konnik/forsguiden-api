@@ -18,6 +18,7 @@ from forsguiden.routers.forsstracka import router as forsstracka_router
 from forsguiden.routers.ovrigt import router as ovrigt_router
 from forsguiden.auth import AuthError
 from forsguiden.security import inloggad, behorighet
+from forsguiden.graphql import graphql_router
 
 import dotenv
 
@@ -33,6 +34,8 @@ app.include_router(lan_router)
 app.include_router(vattendrag_router)
 app.include_router(forsstracka_router)
 app.include_router(ovrigt_router)
+
+app.include_router(graphql_router, prefix="/graphql")
 
 # cors
 
